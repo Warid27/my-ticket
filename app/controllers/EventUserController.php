@@ -6,15 +6,22 @@ class EventUserController extends BaseController
 
     public function __construct()
     {
+        parent::__construct();
+        $this->guard($this->userRoles);
         require_once 'app/models/EventModel.php';
         $this->model = new EventModel();
-        $this->isLoggedIn();
     }
 
     public function index(): void
     {
         $events = $this->model->allWithVenue();
-        require 'app/views/users/event/index.php';
+        $this->layout->extend('mazer-dashboard');
+        $this->layout->section('sidebarMenu', $this->getSidebarMenu('events'));
+        $this->layout->render('user/event/index', [
+            'title' => 'Browse Events - MyTicket',
+            'events' => $events,
+            'activeMenu' => 'events'
+        ]);
     }
 
     public function show(): void
@@ -35,6 +42,14 @@ class EventUserController extends BaseController
             $ticket['event_name'] = $event['name'];
         }
 
-        require 'app/views/user/event/show.php';
+        $this->layout->extend('mazer-dashboard');
+        $this->layout->section('sidebarMenu', $this->getSidebarMenu('events'));
+        $this->layout->render('user/event/show', [
+            'title' => 'Event Details - MyTicket',
+            'event' => $event,
+            'venue' => $venue,
+            'tickets' => $tickets,
+            'activeMenu' => 'events'
+        ]);
     }
 }

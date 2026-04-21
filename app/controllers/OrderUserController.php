@@ -6,6 +6,7 @@ class OrderUserController extends BaseController
 
     public function __construct()
     {
+        parent::__construct();
         require_once 'app/models/OrderModel.php';
         $this->model = new OrderModel();
         $this->guard($this->userRoles);
@@ -21,7 +22,46 @@ class OrderUserController extends BaseController
         $eventModel = new EventModel();
         $event = $eventModel->find((int) $_GET['event_id']);
 
-        require 'app/views/user/order/create.php';
+        $this->layout->extend('mazer-dashboard');
+        $this->layout->section('sidebarMenu', $this->getSidebarMenu('orders'));
+        $this->layout->render('user/order/create', [
+            'title' => 'Create Order - MyTicket',
+            'ticket' => $ticket,
+            'event' => $event,
+            'activeMenu' => 'orders'
+        ]);
+    }
+
+    public function applyVoucher(): void
+    {
+        header('Content-Type: application/json');
+        
+        if (empty($_POST['voucher_code'])) {
+            echo json_encode(['success' => false, 'message' => 'Voucher code is required']);
+            exit;
+        }
+        
+        require_once 'app/models/VoucherModel.php';
+        $voucherModel = new VoucherModel();
+        $voucher = $voucherModel->findByCode($_POST['voucher_code']);
+        
+        if (!$voucher) {
+            echo json_encode(['success' => false, 'message' => 'Invalid voucher code']);
+            exit;
+        }
+        
+        if ($voucher['quota'] <= 0) {
+            echo json_encode(['success' => false, 'message' => 'Voucher quota has been exhausted']);
+            exit;
+        }
+        
+        echo json_encode([
+            'success' => true,
+            'discount' => $voucher['discount'],
+            'type' => $voucher['type'],
+            'message' => 'Voucher applied successfully!'
+        ]);
+        exit;
     }
 
     public function store(): void
@@ -30,6 +70,7 @@ class OrderUserController extends BaseController
         require_once 'app/models/OrderModel.php';
         require_once 'app/models/OrderDetailModel.php';
         require_once 'app/models/AttendeeModel.php';
+        require_once 'app/models/VoucherModel.php';
 
         $ticketModel = new TicketModel();
         $voucherModel = new VoucherModel();
@@ -88,16 +129,16 @@ class OrderUserController extends BaseController
 
             $detail_id = $orderDetailModel->insert([
                 'order_id' => $order_id,
-                'total' => $total,
+                'ticket_id' => $ticket['id'],
                 'qty' => $qty,
                 'subtotal' => $subTotal
             ]);
 
             for ($i = 0; $i < $qty; $i++) {
                 $attendeeModel->insert([
-                    'order_detail_id' => $detail_id,
+                    'detail_id' => $detail_id,
                     'ticket_code' => strtoupper(uniqid('TKT-')),
-                    'checkin_status' => 'pending'
+                    'checkin_status' => 'belum'
                 ]);
             }
 
@@ -126,16 +167,30 @@ class OrderUserController extends BaseController
         $attendees = [];
 
         foreach ($details as $detail) {
-            $detailAttendees = $attendeeModel->query("SELECT * FROM attendees WHERE order_detail_id = ?", [$detail['id']]);
+            $detailAttendees = $attendeeModel->query("SELECT * FROM attendees WHERE detail_id = ?", [$detail['id']]);
             $attendees = [...$attendees, $detailAttendees];
         }
 
-        require 'app/views/user/order/show.php';
+        $this->layout->extend('mazer-dashboard');
+        $this->layout->section('sidebarMenu', $this->getSidebarMenu('orders'));
+        $this->layout->render('user/order/show', [
+            'title' => 'Order Details - MyTicket',
+            'order' => $order,
+            'details' => $details,
+            'attendees' => $attendees,
+            'activeMenu' => 'orders'
+        ]);
     }
 
     public function history(): void
     {
         $orders = $this->model->byUser($_SESSION['user_id']);
-        require 'app/views/user/order/history.php';
+        $this->layout->extend('mazer-dashboard');
+        $this->layout->section('sidebarMenu', $this->getSidebarMenu('orders'));
+        $this->layout->render('user/order/history', [
+            'title' => 'Order History - MyTicket',
+            'orders' => $orders,
+            'activeMenu' => 'orders'
+        ]);
     }
 }

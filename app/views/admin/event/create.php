@@ -1,26 +1,62 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Add Event - MyTicket</title>
-</head>
-<body>
-    <h1>Add Event</h1>
-    <p><a href="index.php?page=dashboard&action=admin">Dashboard</a> | <a href="index.php?page=event&action=index">Back to Events</a></p>
-    
-    <form method="POST" action="index.php?page=event&action=store" enctype="multipart/form-data">
-        <label>Name<br><input type="text" name="name" required></label><br><br>
-        <label>Date<br><input type="date" name="date" required></label><br><br>
-        <label>Venue<br>
-            <select name="venue_id" required>
-                <option value="">Select Venue</option>
-                <?php foreach ($venues as $v): ?>
-                    <option value="<?= $v['id'] ?>"><?= htmlspecialchars($v['name']) ?></option>
-                <?php endforeach; ?>
-            </select>
-        </label><br><br>
-        <label>Image<br><input type="file" name="image" accept="image/*"></label><br><br>
-        <button type="submit">Save</button>
-        <a href="index.php?page=event&action=index">Cancel</a>
-    </form>
-</body>
-</html>
+<div class="page-heading">
+    <div class="page-title">
+        <div class="row">
+            <div class="col-12 col-md-6 order-md-1 order-last">
+                <h3>Add Event</h3>
+                <p class="text-subtitle text-muted">Create a new event</p>
+            </div>
+            <div class="col-12 col-md-6 order-md-2 order-first">
+                <nav aria-label="breadcrumb" class="breadcrumb-header float-start float-lg-end">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item"><a href="index.php?page=dashboard&action=admin">Dashboard</a></li>
+                        <li class="breadcrumb-item"><a href="index.php?page=event&action=index">Events</a></li>
+                        <li class="breadcrumb-item active" aria-current="page">Add Event</li>
+                    </ol>
+                </nav>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="page-content">
+    <section class="section">
+        <div class="card">
+            <div class="card-header">
+                <h4 class="card-title">Event Information</h4>
+            </div>
+            <div class="card-body">
+                <form method="POST" action="index.php?page=event&action=store" enctype="multipart/form-data">
+                    <div class="form-group mb-3">
+                        <label for="name">Name</label>
+                        <input type="text" class="form-control" id="name" name="name" placeholder="Enter event name" required>
+                    </div>
+                    <div class="form-group mb-3">
+                        <label for="date">Date</label>
+                        <input type="date" class="form-control" id="date" name="date" required>
+                    </div>
+                    <div class="form-group mb-3">
+                        <label for="venue_id">Venue</label>
+                        <select class="form-select" id="venue_id" name="venue_id" required>
+                            <option value="">Select Venue</option>
+                            <?php foreach ($venues as $v): ?>
+                                <option value="<?= $v['id'] ?>"><?= htmlspecialchars($v['name']) ?></option>
+                            <?php endforeach; ?>
+                        </select>
+                    </div>
+                    <div class="form-group mb-3">
+                        <label for="image">Image</label>
+                        <input type="file" class="form-control" id="image" name="image" accept="image/*">
+                    </div>
+                    <div class="d-flex gap-2 mt-3">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="bi bi-check-lg"></i> Save
+                        </button>
+                        <a href="index.php?page=event&action=index" class="btn btn-secondary">
+                            <i class="bi bi-x-lg"></i> Cancel
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </section>
+</div>

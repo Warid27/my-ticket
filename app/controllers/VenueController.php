@@ -7,6 +7,7 @@ class VenueController extends BaseController
 
     public function __construct()
     {
+        parent::__construct();
         $this->guard($this->adminRoles);
         require_once 'app/models/VenueModel.php';
         $this->model = new VenueModel();
@@ -17,12 +18,24 @@ class VenueController extends BaseController
         $search = $_GET['search'] ?? '';
         $page = (int) ($_GET['p'] ?? 1);
         $pagination = $this->model->paginate($search, $page);
-        require 'app/views/admin/venue/index.php';
+
+        $this->layout->extend('mazer-dashboard');
+        $this->layout->section('sidebarMenu', $this->getSidebarMenu('venues'));
+        $this->layout->render('admin/venue/index', [
+            'title' => 'Venues - MyTicket',
+            'pagination' => $pagination,
+            'activeMenu' => 'venues'
+        ]);
     }
 
     public function create(): void
     {
-        require 'app/views/admin/venue/create.php';
+        $this->layout->extend('mazer-dashboard');
+        $this->layout->section('sidebarMenu', $this->getSidebarMenu('venues'));
+        $this->layout->render('admin/venue/create', [
+            'title' => 'Add Venue - MyTicket',
+            'activeMenu' => 'venues'
+        ]);
     }
 
     public function store(): void
@@ -39,7 +52,14 @@ class VenueController extends BaseController
     public function edit(): void
     {
         $venue = $this->model->find((int) $_GET['id']);
-        require 'app/views/admin/venue/edit.php';
+
+        $this->layout->extend('mazer-dashboard');
+        $this->layout->section('sidebarMenu', $this->getSidebarMenu('venues'));
+        $this->layout->render('admin/venue/edit', [
+            'title' => 'Edit Venue - MyTicket',
+            'venue' => $venue,
+            'activeMenu' => 'venues'
+        ]);
     }
 
     public function update(): void

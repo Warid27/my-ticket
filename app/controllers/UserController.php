@@ -7,9 +7,66 @@ class UserController extends BaseController
 
     public function __construct()
     {
+        parent::__construct();
         $this->guard($this->adminRoles);
         require_once 'app/models/UserModel.php';
         $this->model = new UserModel();
+    }
+
+    protected function getSidebarMenu(string $activeMenu = 'users'): string
+    {
+        return '
+            <li class="sidebar-title">Menu</li>
+            <li class="sidebar-item">
+                <a href="index.php?page=dashboard&action=admin" class="sidebar-link">
+                    <i class="bi bi-grid-fill"></i>
+                    <span>Dashboard</span>
+                </a>
+            </li>
+            <li class="sidebar-title">Management</li>
+            <li class="sidebar-item ' . ($activeMenu === 'users' ? 'active' : '') . '">
+                <a href="index.php?page=user&action=index" class="sidebar-link">
+                    <i class="bi bi-people-fill"></i>
+                    <span>Users</span>
+                </a>
+            </li>
+            <li class="sidebar-item">
+                <a href="index.php?page=venue&action=index" class="sidebar-link">
+                    <i class="bi bi-geo-alt-fill"></i>
+                    <span>Venues</span>
+                </a>
+            </li>
+            <li class="sidebar-item">
+                <a href="index.php?page=event&action=index" class="sidebar-link">
+                    <i class="bi bi-calendar-event-fill"></i>
+                    <span>Events</span>
+                </a>
+            </li>
+            <li class="sidebar-item">
+                <a href="index.php?page=ticket&action=index" class="sidebar-link">
+                    <i class="bi bi-ticket-perforated-fill"></i>
+                    <span>Tickets</span>
+                </a>
+            </li>
+            <li class="sidebar-item">
+                <a href="index.php?page=voucher&action=index" class="sidebar-link">
+                    <i class="bi bi-tag-fill"></i>
+                    <span>Vouchers</span>
+                </a>
+            </li>
+            <li class="sidebar-title">Operations</li>
+            <li class="sidebar-item">
+                <a href="index.php?page=order&action=index" class="sidebar-link">
+                    <i class="bi bi-cart-fill"></i>
+                    <span>Orders</span>
+                </a>
+            </li>
+            <li class="sidebar-item">
+                <a href="index.php?page=attendee&action=index" class="sidebar-link">
+                    <i class="bi bi-qr-code-scan"></i>
+                    <span>Check-in</span>
+                </a>
+            </li>';
     }
 
     public function index(): void
@@ -17,17 +74,38 @@ class UserController extends BaseController
         $search = $_GET['search'] ?? '';
         $page = (int) ($_GET['p'] ?? 1);
         $pagination = $this->model->paginate($search, $page);
-        require 'app/views/admin/user/index.php';
+
+        $this->layout->extend('mazer-dashboard');
+        $this->layout->section('sidebarMenu', $this->getSidebarMenu('users'));
+        $this->layout->render('admin/user/index', [
+            'title' => 'Users - MyTicket',
+            'pagination' => $pagination,
+            'activeMenu' => 'users'
+        ]);
     }
 
     public function create(): void
     {
-        require 'app/views/admin/user/create.php';
+        $this->layout->extend('mazer-dashboard');
+        $this->layout->section('sidebarMenu', $this->getSidebarMenu('users'));
+        $this->layout->render('admin/user/create', [
+            'title' => 'Add User - MyTicket',
+            'activeMenu' => 'users'
+        ]);
     }
 
     public function edit(): void
     {
-        require 'app/views/admin/user/edit.php';
+        $id = (int) $_GET['id'];
+        $user = $this->model->find($id);
+
+        $this->layout->extend('mazer-dashboard');
+        $this->layout->section('sidebarMenu', $this->getSidebarMenu('users'));
+        $this->layout->render('admin/user/edit', [
+            'title' => 'Edit User - MyTicket',
+            'user' => $user,
+            'activeMenu' => 'users'
+        ]);
     }
 
     public function store(): void

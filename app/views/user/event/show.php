@@ -1,38 +1,64 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title><?= htmlspecialchars($event['name']) ?> - MyTicket</title>
-</head>
-<body>
-    <h1><?= htmlspecialchars($event['name']) ?></h1>
-    <p><a href="index.php?page=dashboard&action=customer">Dashboard</a> | <a href="index.php?page=event&action=index">Back to Events</a></p>
+<div class="page-heading">
+    <h3><?= htmlspecialchars($event['name']) ?></h3>
+    <p class="text-subtitle text-muted">Event details and tickets</p>
+</div>
+
+<div class="page-content">
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h4 class="card-title">Event Details</h4>
+                </div>
+                <div class="card-body">
+                    <p><strong>Date:</strong> <?= $event['date'] ?></p>
+                    <p><strong>Venue:</strong> <?= htmlspecialchars($event['venue_name']) ?></p>
+                </div>
+            </div>
+        </div>
+    </div>
     
-    <h2>Event Details</h2>
-    <p>Date: <?= $event['date'] ?></p>
-    <p>Venue: <?= htmlspecialchars($event['venue_name']) ?></p>
-    <?php if ($event['image']): ?>
-        <p>Image: <img src="uploads/<?= $event['image'] ?>" alt="<?= htmlspecialchars($event['name']) ?>" width="300"></p>
-    <?php endif; ?>
-    
-    <h2>Available Tickets</h2>
-    <table border="1">
-        <tr>
-            <th>Type</th><th>Price</th><th>Available</th><th>Action</th>
-        </tr>
-        <?php foreach ($tickets as $t): ?>
-        <tr>
-            <td><?= htmlspecialchars($t['name']) ?></td>
-            <td>Rp <?= number_format($t['price']) ?></td>
-            <td><?= $t['quota'] ?></td>
-            <td>
-                <?php if ($t['quota'] > 0): ?>
-                    <a href="index.php?page=order&action=create&ticket_id=<?= $t['id'] ?>">Buy</a>
-                <?php else: ?>
-                    Sold Out
-                <?php endif; ?>
-            </td>
-        </tr>
-        <?php endforeach; ?>
-    </table>
-</body>
-</html>
+    <div class="row mt-3">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h4 class="card-title">Available Tickets</h4>
+                </div>
+                <div class="card-body">
+                    <?php if (!empty($tickets)): ?>
+                        <div class="table-responsive">
+                            <table class="table table-striped">
+                                <thead>
+                                    <tr>
+                                        <th>Type</th>
+                                        <th>Price</th>
+                                        <th>Available</th>
+                                        <th>Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <?php foreach ($tickets as $t): ?>
+                                        <tr>
+                                            <td><?= htmlspecialchars($t['name']) ?></td>
+                                            <td>Rp <?= number_format($t['price']) ?></td>
+                                            <td><?= $t['quota'] ?></td>
+                                            <td>
+                                                <?php if ($t['quota'] > 0): ?>
+                                                    <a href="index.php?page=order&action=create&ticket_id=<?= $t['id'] ?>&event_id=<?= $event['id'] ?>" class="btn btn-primary btn-sm">Buy</a>
+                                                <?php else: ?>
+                                                    <span class="badge bg-secondary">Sold Out</span>
+                                                <?php endif; ?>
+                                            </td>
+                                        </tr>
+                                    <?php endforeach; ?>
+                                </tbody>
+                            </table>
+                        </div>
+                    <?php else: ?>
+                        <p class="text-muted">No tickets available for this event.</p>
+                    <?php endif; ?>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

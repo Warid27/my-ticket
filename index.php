@@ -30,7 +30,7 @@ $controllerName = $map[$page];
 // 2. Logic Role User (Override controller ke versi User)
 $userModules = ['event', 'ticket', 'order'];
 if ($role === 'user' && in_array($page, $userModules)) {
-    $controllerName .= 'User'; // Jadi EventUserController, dll.
+    $controllerName = str_replace('Controller', 'UserController', $controllerName);
 }
 
 // 3. Load File & Inisialisasi

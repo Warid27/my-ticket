@@ -1,26 +1,46 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Events - MyTicket</title>
-</head>
-<body>
-    <h1>Events</h1>
-    <p><a href="index.php?page=dashboard&action=customer">Dashboard</a></p>
+<div class="page-heading">
+    <h3>Browse Events</h3>
+    <p class="text-subtitle text-muted">Discover and book events</p>
+</div>
 
-    <table border="1">
-        <tr>
-            <th>Event</th><th>Date</th><th>Venue</th><th>Action</th>
-        </tr>
-        <?php foreach ($events as $e): ?>
-        <tr>
-            <td><?= htmlspecialchars($e['name']) ?></td>
-            <td><?= $e['date'] ?></td>
-            <td><?= htmlspecialchars($e['venue_name']) ?></td>
-            <td>
-                <a href="index.php?page=event&action=show&id=<?= $e['id'] ?>">View & Buy Tickets</a>
-            </td>
-        </tr>
-        <?php endforeach; ?>
-    </table>
-</body>
-</html>
+<div class="page-content">
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h4 class="card-title">Available Events</h4>
+                </div>
+                <div class="card-body">
+                    <?php if (!empty($events)): ?>
+                        <div class="table-responsive">
+                            <table class="table table-striped">
+                                <thead>
+                                    <tr>
+                                        <th>Event</th>
+                                        <th>Date</th>
+                                        <th>Venue</th>
+                                        <th>Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <?php foreach ($events as $e): ?>
+                                        <tr>
+                                            <td><?= htmlspecialchars($e['name']) ?></td>
+                                            <td><?= $e['date'] ?></td>
+                                            <td><?= htmlspecialchars($e['venue_name']) ?></td>
+                                            <td>
+                                                <a href="index.php?page=event&action=show&id=<?= $e['id'] ?>" class="btn btn-primary btn-sm">View & Buy Tickets</a>
+                                            </td>
+                                        </tr>
+                                    <?php endforeach; ?>
+                                </tbody>
+                            </table>
+                        </div>
+                    <?php else: ?>
+                        <p class="text-muted">No events available.</p>
+                    <?php endif; ?>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

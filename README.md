@@ -35,7 +35,7 @@ A web-based ticket ordering system built with PHP Native and MySQL.
 2. Create database `myticket` in MySQL
 3. Run migration: `php db/create_db.php` then `php db/migration.php`
 4. Configure web server to point to project root
-5. Access at `http://localhost/myticket-simple/`
+5. Access at `http://localhost/myticket/`
 
 ## Default Login
 
@@ -46,7 +46,7 @@ A web-based ticket ordering system built with PHP Native and MySQL.
 ## Project Structure
 
 ```
-myticket-simple/
+myticket/
 ├── db/
 │   ├── db.php              # PDO connection
 │   ├── migration.php       # Database migration & seeder

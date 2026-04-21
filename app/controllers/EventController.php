@@ -7,6 +7,7 @@ class EventController extends BaseController
 
     public function __construct()
     {
+        parent::__construct();
         $this->guard($this->adminRoles);
         require_once 'app/models/EventModel.php';
         $this->model = new EventModel();
@@ -29,7 +30,13 @@ class EventController extends BaseController
         }
         $pagination['data'] = $eventsWithVenue;
 
-        require 'app/views/admin/event/index.php';
+        $this->layout->extend('mazer-dashboard');
+        $this->layout->section('sidebarMenu', $this->getSidebarMenu('events'));
+        $this->layout->render('admin/event/index', [
+            'title' => 'Events - MyTicket',
+            'pagination' => $pagination,
+            'activeMenu' => 'events'
+        ]);
     }
 
     public function create(): void
@@ -38,7 +45,13 @@ class EventController extends BaseController
         require_once 'app/models/VenueModel.php';
         $venueModel = new VenueModel();
         $venues = $venueModel->all();
-        require 'app/views/admin/event/create.php';
+        $this->layout->extend('mazer-dashboard');
+        $this->layout->section('sidebarMenu', $this->getSidebarMenu('events'));
+        $this->layout->render('admin/event/create', [
+            'title' => 'Add Event - MyTicket',
+            'venues' => $venues,
+            'activeMenu' => 'events'
+        ]);
     }
 
     public function store(): void
@@ -60,7 +73,14 @@ class EventController extends BaseController
         require_once 'app/models/VenueModel.php';
         $venueModel = new VenueModel();
         $venues = $venueModel->all();
-        require 'app/views/admin/event/edit.php';
+        $this->layout->extend('mazer-dashboard');
+        $this->layout->section('sidebarMenu', $this->getSidebarMenu('events'));
+        $this->layout->render('admin/event/edit', [
+            'title' => 'Edit Event - MyTicket',
+            'event' => $event,
+            'venues' => $venues,
+            'activeMenu' => 'events'
+        ]);
     }
 
     public function update(): void

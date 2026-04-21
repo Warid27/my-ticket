@@ -8,10 +8,12 @@ class TicketController extends BaseController
 
     public function __construct()
     {
+        parent::__construct();
         require_once 'app/models/TicketModel.php';
         $this->model = new TicketModel();
         $this->guard($this->adminRoles);
     }
+
     public function index(): void
     {
         require_once 'app/models/EventModel.php';
@@ -29,7 +31,13 @@ class TicketController extends BaseController
         }
         $pagination['data'] = $ticketsWithEvent;
 
-        require 'app/views/admin/ticket/index.php';
+        $this->layout->extend('mazer-dashboard');
+        $this->layout->section('sidebarMenu', $this->getSidebarMenu('tickets'));
+        $this->layout->render('admin/ticket/index', [
+            'title' => 'Tickets - MyTicket',
+            'pagination' => $pagination,
+            'activeMenu' => 'tickets'
+        ]);
     }
 
     public function create(): void
@@ -38,7 +46,13 @@ class TicketController extends BaseController
         require_once 'app/models/EventModel.php';
         $eventModel = new EventModel();
         $events = $eventModel->allWithVenue();
-        require 'app/views/admin/ticket/create.php';
+        $this->layout->extend('mazer-dashboard');
+        $this->layout->section('sidebarMenu', $this->getSidebarMenu('tickets'));
+        $this->layout->render('admin/ticket/create', [
+            'title' => 'Add Ticket - MyTicket',
+            'events' => $events,
+            'activeMenu' => 'tickets'
+        ]);
     }
 
     public function store(): void
@@ -61,7 +75,14 @@ class TicketController extends BaseController
         require_once 'app/models/EventModel.php';
         $eventModel = new EventModel();
         $events = $eventModel->allWithVenue();
-        require 'app/views/admin/ticket/edit.php';
+        $this->layout->extend('mazer-dashboard');
+        $this->layout->section('sidebarMenu', $this->getSidebarMenu('tickets'));
+        $this->layout->render('admin/ticket/edit', [
+            'title' => 'Edit Ticket - MyTicket',
+            'ticket' => $ticket,
+            'events' => $events,
+            'activeMenu' => 'tickets'
+        ]);
     }
 
     public function update(): void

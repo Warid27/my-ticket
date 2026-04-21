@@ -6,6 +6,7 @@ class VoucherController extends BaseController
 
     public function __construct()
     {
+        parent::__construct();
         $this->guard($this->adminRoles);
         require_once 'app/models/VoucherModel.php';
         $this->model = new VoucherModel();
@@ -16,12 +17,23 @@ class VoucherController extends BaseController
         $search = $_GET['search'] ?? '';
         $page = (int) ($_GET['p'] ?? 1);
         $pagination = $this->model->paginate($search, $page);
-        require 'app/views/admin/voucher/index.php';
+        $this->layout->extend('mazer-dashboard');
+        $this->layout->section('sidebarMenu', $this->getSidebarMenu('vouchers'));
+        $this->layout->render('admin/voucher/index', [
+            'title' => 'Vouchers - MyTicket',
+            'pagination' => $pagination,
+            'activeMenu' => 'vouchers'
+        ]);
     }
 
     public function create(): void
     {
-        require 'app/views/admin/voucher/create.php';
+        $this->layout->extend('mazer-dashboard');
+        $this->layout->section('sidebarMenu', $this->getSidebarMenu('vouchers'));
+        $this->layout->render('admin/voucher/create', [
+            'title' => 'Add Voucher - MyTicket',
+            'activeMenu' => 'vouchers'
+        ]);
     }
 
     public function store(): void
@@ -38,7 +50,13 @@ class VoucherController extends BaseController
     public function edit(): void
     {
         $voucher = $this->model->find((int) $_GET['id']);
-        require 'app/views/admin/voucher/edit.php';
+        $this->layout->extend('mazer-dashboard');
+        $this->layout->section('sidebarMenu', $this->getSidebarMenu('vouchers'));
+        $this->layout->render('admin/voucher/edit', [
+            'title' => 'Edit Voucher - MyTicket',
+            'voucher' => $voucher,
+            'activeMenu' => 'vouchers'
+        ]);
     }
 
     public function update(): void

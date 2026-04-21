@@ -173,23 +173,23 @@ foreach ($tickets as $index => $ticket) {
     $stmt = $pdo->prepare("SELECT id FROM tickets WHERE name = ? AND event_id = ?");
     $stmt->execute([$ticket[0], $eventIds[$index % count($eventIds)]]);
     if (!$stmt->fetchAll()) {
-        $pdo->prepare("INSERT INTO tickets (name, price, quota, event_id) VALUES (?, ?, ?, ?)")->execute([$ticket[0], $ticket[1], $ticket[2], $venueIds[$index % count($venueIds)]]);
+        $pdo->prepare("INSERT INTO tickets (name, price, quota, event_id) VALUES (?, ?, ?, ?)")->execute([$ticket[0], $ticket[1], $ticket[2], $eventIds[$index % count($eventIds)]]);
     }
 }
 
 // voucher
 $vouchers = [
-    ["DISCOUNT10K", 10000, 100, 'value'],
-    ["DISCOUNT100K", 100000, 50, 'value'],
-    ["DISCOUNT1JT", 1000000, 10, 'value'],
-    ["MYTICKET", 10, 1000, 'percentage'],
+    ["DISCOUNT10K", 10000, 100, 'value', 'aktif'],
+    ["DISCOUNT100K", 100000, 50, 'value', 'aktif'],
+    ["DISCOUNT1JT", 1000000, 10, 'value', 'aktif'],
+    ["MYTICKET", 10, 1000, 'percentage', 'aktif'],
 ];
 
 foreach ($vouchers as $voucher) {
     $stmt = $pdo->prepare("SELECT id FROM vouchers WHERE code = ?");
     $stmt->execute([$voucher[0]]);
     if (!$stmt->fetchAll()) {
-        $pdo->prepare("INSERT INTO vouchers (code, discount, quota, type) VALUES (?, ?, ?, ?)")->execute([$voucher[0], $voucher[1], $voucher[2], $voucher[3]]);
+        $pdo->prepare("INSERT INTO vouchers (code, discount, quota, type, status) VALUES (?, ?, ?, ?, ?)")->execute([$voucher[0], $voucher[1], $voucher[2], $voucher[3], $voucher[4]]);
     }
 }
 

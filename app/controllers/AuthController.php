@@ -2,14 +2,25 @@
 require_once 'app/core/BaseController.php';
 class AuthController extends BaseController
 {
+    public function __construct()
+    {
+        parent::__construct();
+    }
+
     public function login(): void
     {
-        require 'app/views/auth/login.php';
+        $this->layout->extend('mazer-auth');
+        $this->layout->render('auth/login', [
+            'title' => 'Login - MyTicket'
+        ]);
     }
 
     public function register(): void
     {
-        require 'app/views/auth/register.php';
+        $this->layout->extend('mazer-auth');
+        $this->layout->render('auth/register', [
+            'title' => 'Register - MyTicket'
+        ]);
     }
 
     public function store(): void

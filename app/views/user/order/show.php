@@ -5,11 +5,10 @@
 </head>
 <body>
     <h1>Order Details</h1>
-    <p><a href="index.php?page=dashboard&action=admin">Dashboard</a> | <a href="index.php?page=order&action=index">Back to Orders</a></p>
+    <p><a href="index.php?page=dashboard&action=customer">Dashboard</a> | <a href="index.php?page=order&action=history">Order History</a></p>
     
     <h2>Order Information</h2>
     <p>Order ID: <?= $order['id'] ?></p>
-    <p>Customer: <?= htmlspecialchars($order['customer_name']) ?></p>
     <p>Date: <?= $order['order_date'] ?></p>
     <p>Total: Rp <?= number_format($order['total']) ?></p>
     <p>Status: <?= $order['status'] ?></p>
@@ -30,5 +29,8 @@
         </tr>
         <?php endforeach; ?>
     </table>
+    
+    <h2>Tickets</h2>
+    <p><a href="index.php?page=ticket&action=show&order_id=<?= $order['id'] ?>">View QR Codes</a></p>
 </body>
 </html>

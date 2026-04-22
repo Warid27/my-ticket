@@ -56,15 +56,21 @@ class DashboardController extends BaseController
 
         require_once 'app/models/OrderModel.php';
         require_once 'app/models/EventModel.php';
+        require_once 'app/models/NotificationModel.php';
 
         $orderModel = new OrderModel();
         $eventModel = new EventModel();
+        $notificationModel = new NotificationModel();
 
         // Order terbaru
         $recentOrders = $orderModel->query("SELECT * FROM orders WHERE user_id = ? ORDER BY date DESC LIMIT 5", [$_SESSION['user_id']]);
 
         // Event yang akan datang
         $upcomingEvents = $eventModel->query("SELECT events.*, venues.name AS venue_name FROM events JOIN venues ON events.venue_id = venues.id WHERE events.date >= CURDATE() ORDER BY events.date ASC LIMIT 5");
+
+        // Notifications
+        $notifications = $notificationModel->getUserNotifications($_SESSION['user_id'], 5);
+        $unreadCount = $notificationModel->getUnreadCount($_SESSION['user_id']);
 
         $activeMenu = 'dashboard';
         $this->layout->extend('mazer-dashboard');
@@ -73,6 +79,8 @@ class DashboardController extends BaseController
             'title' => 'User Dashboard - MyTicket',
             'recentOrders' => $recentOrders,
             'upcomingEvents' => $upcomingEvents,
+            'notifications' => $notifications,
+            'unreadCount' => $unreadCount,
             'activeMenu' => 'dashboard'
         ]);
     }

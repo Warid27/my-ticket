@@ -105,8 +105,34 @@ class AttendeeController extends BaseController
             exit;
         }
 
-        $this->model->update($attendee['id'], ['checkin_status' => 'sudah']);
-        $_SESSION['success'] = 'Check-in successful';
+        // Update check-in status and time
+        $this->model->update($attendee['id'], [
+            'checkin_status' => 'sudah',
+            'checkin_time' => date('Y-m-d H:i:s')
+        ]);
+
+        // Create notification for user
+        require_once 'app/models/NotificationModel.php';
+        $notificationModel = new NotificationModel();
+        
+        // Get event name for notification
+        require_once 'app/models/EventModel.php';
+        require_once 'app/models/TicketModel.php';
+        $ticketModel = new TicketModel();
+        $eventModel = new EventModel();
+        
+        $ticket = $ticketModel->find($orderDetail['ticket_id']);
+        $event = $ticket ? $eventModel->find($ticket['event_id']) : null;
+        $eventName = $event ? $event['name'] : 'Event';
+        
+        $notificationModel->createNotification(
+            $order['user_id'],
+            'Ticket Checked In! ',
+            "Your ticket for '{$eventName}' has been successfully checked in. Enjoy the event!",
+            'checkin'
+        );
+
+        $_SESSION['success'] = 'Check-in successful and notification sent to user';
         header('Location: index.php?page=attendee&action=index');
         exit;
     }

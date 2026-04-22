@@ -27,18 +27,18 @@
                                 <tbody>
                                     <?php foreach ($tickets as $ticket): ?>
                                         <tr>
-                                            <td><code><?= htmlspecialchars($ticket['ticket_code']) ?></code></td>
-                                            <td>#<?= $ticket['order_id'] ?></td>
-                                            <td><?= $ticket['date'] ?></td>
-                                            <td>Rp <?= number_format($ticket['order_total']) ?></td>
+                                            <td><code><?= htmlspecialchars($ticket['ticket_code'] ?? '') ?></code></td>
+                                            <td>#<?= $ticket['order_id'] ?? '' ?></td>
+                                            <td><?= htmlspecialchars($ticket['order_date'] ?? 'N/A') ?></td>
+                                            <td>Rp <?= number_format($ticket['order_total'] ?? 0) ?></td>
                                             <td>
-                                                <span class="badge bg-<?= $ticket['order_status'] === 'paid' ? 'success' : ($ticket['order_status'] === 'pending' ? 'warning' : 'secondary') ?>">
-                                                    <?= ucfirst($ticket['order_status']) ?>
+                                                <span class="badge bg-<?= ($ticket['order_status'] ?? '') === 'paid' ? 'success' : (($ticket['order_status'] ?? '') === 'pending' ? 'warning' : 'secondary') ?>">
+                                                    <?= ucfirst($ticket['order_status'] ?? 'unknown') ?>
                                                 </span>
                                             </td>
                                             <td>
-                                                <span class="badge bg-<?= $ticket['checkin_status'] === 'checked' ? 'success' : 'secondary' ?>">
-                                                    <?= ucfirst($ticket['checkin_status']) ?>
+                                                <span class="badge bg-<?= ($ticket['checkin_status'] ?? 'belum') === 'sudah' ? 'success' : 'secondary' ?>">
+                                                    <?= ($ticket['checkin_status'] ?? 'belum') === 'sudah' ? 'Checked In' : 'Not Checked In' ?>
                                                 </span>
                                             </td>
                                         </tr>

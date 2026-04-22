@@ -62,7 +62,7 @@ class TicketUserController extends BaseController
         foreach ($details as $detail) {
             $detailAttendees = $attendeeModel->query("SELECT * FROM attendees WHERE detail_id = ?", [$detail['id']]);
 
-            $attendees = [...$attendees, $detailAttendees];
+            $attendees = array_merge($attendees, $detailAttendees);
         }
 
         $this->layout->extend('mazer-dashboard');

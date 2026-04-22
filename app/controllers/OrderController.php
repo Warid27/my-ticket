@@ -42,6 +42,11 @@ class OrderController extends BaseController
     public function show(): void
     {
         $order = $this->model->find((int) $_GET['id']);
+        if (!$order) {
+            $_SESSION['error'] = 'Order not found.';
+            header('Location: index.php?page=order&action=index');
+            exit;
+        }
         require_once 'app/models/OrderDetailModel.php';
         $detailModel = new OrderDetailModel();
         $details = $detailModel->byOrder((int) $_GET['id']);
@@ -49,7 +54,7 @@ class OrderController extends BaseController
         require_once 'app/models/UserModel.php';
         $userModel = new UserModel();
         $customer = $userModel->find($order['user_id']);
-        $order['customer_name'] = $customer['name'];
+        $order['customer_name'] = $customer['name'] ?? 'Unknown';
 
         $this->layout->extend('mazer-dashboard');
         $this->layout->section('sidebarMenu', $this->getSidebarMenu('orders'));

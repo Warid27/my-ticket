@@ -52,14 +52,15 @@ class OrderModel extends BaseModel
         ];
     }
 
-    public function find(int $id): array
+    public function find(int $id): array|false
     {
         $sql = "SELECT o.*, u.name AS customer_name, v.code AS voucher_code 
                 FROM orders o 
                 LEFT JOIN users u ON o.user_id = u.id 
                 LEFT JOIN vouchers v ON o.voucher_id = v.id 
                 WHERE o.id = ?";
-        return $this->queryOne($sql, [$id]);
+        $result = $this->queryOne($sql, [$id]);
+        return $result ?? false;
     }
 }
 

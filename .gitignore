@@ -2,3 +2,4 @@ app/assets/
 /.windsurf/
 /dist/
 /specs/
+/tests/

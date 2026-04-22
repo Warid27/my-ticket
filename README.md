@@ -39,8 +39,8 @@ A web-based ticket ordering system built with PHP Native and MySQL.
 
 ## Default Login
 
-- **Admin**: admin@myticket.com / admin123
-- **Petugas** (Staff): petugas@myticket.com / petugas123
+- **Admin**: admin@gmail.com / password
+- **Petugas** (Staff): petugas1@gmail.com / password (or petugas2@gmail.com / password)
 - **Customer**: Register through the system
 
 ## Project Structure

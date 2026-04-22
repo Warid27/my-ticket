@@ -16,11 +16,17 @@ class OrderUserController extends BaseController
     {
         require_once 'app/models/TicketModel.php';
         $ticketModel = new TicketModel();
-        $ticket = $ticketModel->find((int) $_GET['ticket_id']);
+        $ticket = $ticketModel->find((int) ($_GET['ticket_id'] ?? 0));
 
         require_once 'app/models/EventModel.php';
         $eventModel = new EventModel();
-        $event = $eventModel->find((int) $_GET['event_id']);
+        $event = $eventModel->find((int) ($_GET['event_id'] ?? 0));
+
+        if (!$ticket || !$event) {
+            $_SESSION['error'] = 'Ticket or event not found.';
+            header('Location: index.php?page=event&action=index');
+            exit;
+        }
 
         $this->layout->extend('mazer-dashboard');
         $this->layout->section('sidebarMenu', $this->getSidebarMenu('orders'));

@@ -111,7 +111,7 @@ class AttendeeController extends BaseController
             'checkin_time' => date('Y-m-d H:i:s')
         ]);
 
-        // Create notification for user
+        // Create notification for user (only if user exists)
         require_once 'app/models/NotificationModel.php';
         $notificationModel = new NotificationModel();
         
@@ -125,12 +125,22 @@ class AttendeeController extends BaseController
         $event = $ticket ? $eventModel->find($ticket['event_id']) : null;
         $eventName = $event ? $event['name'] : 'Event';
         
-        $notificationModel->createNotification(
-            $order['user_id'],
-            'Ticket Checked In! ',
-            "Your ticket for '{$eventName}' has been successfully checked in. Enjoy the event!",
-            'checkin'
-        );
+        // Verify user exists before creating notification
+        require_once 'app/models/UserModel.php';
+        $userModel = new UserModel();
+        $user = $userModel->find($order['user_id']);
+        
+        if ($user) {
+            $notificationModel->createNotification(
+                $order['user_id'],
+                'Ticket Checked In! ',
+                "Your ticket for '{$eventName}' has been successfully checked in. Enjoy the event!",
+                'checkin'
+            );
+        } else {
+            // Log error for debugging but don't fail the check-in
+            error_log("Notification failed: User ID {$order['user_id']} not found for order {$order['id']}");
+        }
 
         $_SESSION['success'] = 'Check-in successful and notification sent to user';
         header('Location: index.php?page=attendee&action=index');

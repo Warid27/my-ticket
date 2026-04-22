@@ -109,7 +109,7 @@
                                         </td>
                                         <td><?= htmlspecialchars($attendee['order_date']) ?></td>
                                         <td>
-                                            <?php if ($attendee['checkin_status'] === 'checked'): ?>
+                                            <?php if ($attendee['checkin_status'] === 'sudah'): ?>
                                                 <span class="badge bg-success">Checked In</span>
                                             <?php else: ?>
                                                 <span class="badge bg-secondary">Not Checked In</span>

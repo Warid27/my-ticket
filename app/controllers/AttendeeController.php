@@ -79,7 +79,7 @@ class AttendeeController extends BaseController
             exit;
         }
 
-        if ($attendee['checkin_status'] === 'checked') {
+        if ($attendee['checkin_status'] === 'sudah') {
             $_SESSION['error'] = 'Ticket already checked in';
             header('Location: index.php?page=attendee&action=index');
             exit;
@@ -105,7 +105,7 @@ class AttendeeController extends BaseController
             exit;
         }
 
-        $this->model->update($attendee['id'], ['checkin_status' => 'checked']);
+        $this->model->update($attendee['id'], ['checkin_status' => 'sudah']);
         $_SESSION['success'] = 'Check-in successful';
         header('Location: index.php?page=attendee&action=index');
         exit;

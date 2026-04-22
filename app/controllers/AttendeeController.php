@@ -42,6 +42,26 @@ class AttendeeController extends BaseController
             exit;
         }
 
+        // Check if order is paid before allowing check-in
+        require_once 'app/models/OrderDetailModel.php';
+        require_once 'app/models/OrderModel.php';
+        $orderDetailModel = new OrderDetailModel();
+        $orderModel = new OrderModel();
+
+        $orderDetail = $orderDetailModel->find($attendee['detail_id']);
+        if (!$orderDetail) {
+            $_SESSION['error'] = 'Order detail not found';
+            header('Location: index.php?page=attendee&action=index');
+            exit;
+        }
+
+        $order = $orderModel->find($orderDetail['order_id']);
+        if (!$order || $order['status'] !== 'paid') {
+            $_SESSION['error'] = 'Check-in only allowed for paid orders';
+            header('Location: index.php?page=attendee&action=index');
+            exit;
+        }
+
         $this->model->update($attendee['id'], ['checkin_status' => 'checked']);
         $_SESSION['success'] = 'Check-in successful';
         header('Location: index.php?page=attendee&action=index');

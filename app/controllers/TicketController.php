@@ -58,12 +58,29 @@ class TicketController extends BaseController
     public function store(): void
     {
         $this->guard(['admin']);
+
+        $price = (int) $_POST['price'];
+        $quota = (int) $_POST['quota'];
+
+        if ($price < 0) {
+            $_SESSION['error'] = 'Price cannot be negative';
+            header("Location: index.php?page=ticket&action=create");
+            exit;
+        }
+
+        if ($quota < 0) {
+            $_SESSION['error'] = 'Quota cannot be negative';
+            header("Location: index.php?page=ticket&action=create");
+            exit;
+        }
+
         $this->model->insert([
             'event_id' => (int) $_POST['event_id'],
             'name' => $_POST['name'],
-            'price' => (int) $_POST['price'],
-            'quota' => (int) $_POST['quota']
+            'price' => $price,
+            'quota' => $quota
         ]);
+        $_SESSION['success'] = 'Ticket created successfully';
         header("Location: $this->indexPage");
         exit;
     }
@@ -88,12 +105,29 @@ class TicketController extends BaseController
     public function update(): void
     {
         $this->guard(['admin']);
+
+        $price = (int) $_POST['price'];
+        $quota = (int) $_POST['quota'];
+
+        if ($price < 0) {
+            $_SESSION['error'] = 'Price cannot be negative';
+            header("Location: index.php?page=ticket&action=edit&id=" . $_POST['id']);
+            exit;
+        }
+
+        if ($quota < 0) {
+            $_SESSION['error'] = 'Quota cannot be negative';
+            header("Location: index.php?page=ticket&action=edit&id=" . $_POST['id']);
+            exit;
+        }
+
         $this->model->update((int) $_POST['id'], [
             'event_id' => (int) $_POST['event_id'],
             'name' => $_POST['name'],
-            'price' => (int) $_POST['price'],
-            'quota' => (int) $_POST['quota']
+            'price' => $price,
+            'quota' => $quota
         ]);
+        $_SESSION['success'] = 'Ticket updated successfully';
         header("Location: $this->indexPage");
         exit;
     }

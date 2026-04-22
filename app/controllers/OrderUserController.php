@@ -87,9 +87,28 @@ class OrderUserController extends BaseController
         $qty = (int) $_POST['qty'];
         $ticket = $ticketModel->find((int) $_POST['ticket_id']);
 
+        if (!$ticket) {
+            $_SESSION['error'] = 'Ticket not found!';
+            header("Location: index.php?page=event&action=index");
+            exit;
+        }
+
+        if ($ticket['quota'] <= 0) {
+            $_SESSION['error'] = 'Ticket sold out! No quota available.';
+            header("Location: index.php?page=order&action=create&ticket_id=" . $_POST['ticket_id'] . "&event_id=" . $_POST['event_id']);
+            exit;
+        }
+
+        if ($qty <= 0) {
+            $_SESSION['error'] = 'Quantity must be greater than 0!';
+            header("Location: index.php?page=order&action=create&ticket_id=" . $_POST['ticket_id'] . "&event_id=" . $_POST['event_id']);
+            exit;
+        }
+
         if ($qty > $ticket['quota']) {
             $_SESSION['error'] = 'Kuota tidak cukup!';
-            header("Location: index.php?page=order&action=create&ticket_id =" . $_POST['ticket_id']);
+            header("Location: index.php?page=order&action=create&ticket_id=" . $_POST['ticket_id'] . "&event_id=" . $_POST['event_id']);
+            exit;
         }
         $voucher_id = null;
         $discount = 0;
@@ -198,5 +217,108 @@ class OrderUserController extends BaseController
             'orders' => $orders,
             'activeMenu' => 'orders'
         ]);
+    }
+
+    public function pay(): void
+    {
+        $orderId = (int) $_GET['id'];
+        $order = $this->model->find($orderId);
+
+        if (!$order) {
+            $_SESSION['error'] = 'Order not found!';
+            header("Location: index.php?page=order&action=history");
+            exit;
+        }
+
+        // Verify order belongs to current user
+        if ($order['user_id'] !== $_SESSION['user_id']) {
+            $_SESSION['error'] = 'Unauthorized access!';
+            header("Location: index.php?page=order&action=history");
+            exit;
+        }
+
+        // Only pending orders can be paid
+        if ($order['status'] !== 'pending') {
+            $_SESSION['error'] = 'Order cannot be paid. Current status: ' . $order['status'];
+            header("Location: index.php?page=order&action=show&id=$orderId");
+            exit;
+        }
+
+        // Update order status to paid
+        $this->model->update($orderId, ['status' => 'paid']);
+        $_SESSION['success'] = 'Payment successful! Order status updated to Paid.';
+        header("Location: index.php?page=order&action=show&id=$orderId");
+        exit;
+    }
+
+    public function cancel(): void
+    {
+        $orderId = (int) $_GET['id'];
+        $order = $this->model->find($orderId);
+
+        if (!$order) {
+            $_SESSION['error'] = 'Order not found!';
+            header("Location: index.php?page=order&action=history");
+            exit;
+        }
+
+        // Verify order belongs to current user
+        if ($order['user_id'] !== $_SESSION['user_id']) {
+            $_SESSION['error'] = 'Unauthorized access!';
+            header("Location: index.php?page=order&action=history");
+            exit;
+        }
+
+        // Only pending orders can be cancelled
+        if ($order['status'] !== 'pending') {
+            $_SESSION['error'] = 'Order cannot be cancelled. Current status: ' . $order['status'];
+            header("Location: index.php?page=order&action=show&id=$orderId");
+            exit;
+        }
+
+        require_once 'app/models/OrderDetailModel.php';
+        require_once 'app/models/TicketModel.php';
+        require_once 'app/models/VoucherModel.php';
+
+        $orderDetailModel = new OrderDetailModel();
+        $ticketModel = new TicketModel();
+        $voucherModel = new VoucherModel();
+
+        $db = getDB();
+        $db->beginTransaction();
+
+        try {
+            // Get order details to restore ticket quota
+            $details = $orderDetailModel->byOrder($orderId);
+
+            foreach ($details as $detail) {
+                $ticket = $ticketModel->find($detail['ticket_id']);
+                if ($ticket) {
+                    // Restore ticket quota
+                    $newQuota = $ticket['quota'] + $detail['qty'];
+                    $ticketModel->update($detail['ticket_id'], ['quota' => $newQuota]);
+                }
+            }
+
+            // Restore voucher quota if voucher was used
+            if ($order['voucher_id']) {
+                $voucher = $voucherModel->find($order['voucher_id']);
+                if ($voucher) {
+                    $voucherModel->update($order['voucher_id'], ['quota' => $voucher['quota'] + 1]);
+                }
+            }
+
+            // Update order status to cancelled
+            $this->model->update($orderId, ['status' => 'cancel']);
+
+            $db->commit();
+            $_SESSION['success'] = 'Order cancelled successfully. Ticket quota has been restored.';
+        } catch (PDOException $e) {
+            $db->rollBack();
+            $_SESSION['error'] = 'Failed to cancel order: ' . $e->getMessage();
+        }
+
+        header("Location: index.php?page=order&action=history");
+        exit;
     }
 }

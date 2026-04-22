@@ -62,7 +62,7 @@
                                             <td><?= $order['date'] ?></td>
                                             <td>Rp <?= number_format($order['total']) ?></td>
                                             <td>
-                                                <span class="badge bg-<?= $order['status'] === 'paid' ? 'success' : ($order['status'] === 'pending' ? 'warning' : 'secondary') ?>">
+                                                <span class="badge bg-<?= $order['status'] === 'paid' ? 'success' : ($order['status'] === 'pending' ? 'warning' : 'danger') ?>">
                                                     <?= ucfirst($order['status']) ?>
                                                 </span>
                                             </td>

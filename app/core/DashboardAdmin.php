@@ -6,51 +6,51 @@ class DashboardAdmin
     {
         return '
             <li class="sidebar-title">Menu</li>
-            <li class="sidebar-item ' . ($activeMenu === 'dashboard' ? 'active' : '') . '">
+            <li class="sidebar-item ' . ($activeMenu === 'dashboard' ? 'aktif' : '') . '">
                 <a href="index.php?page=dashboard&action=admin" class="sidebar-link">
                     <i class="bi bi-grid-fill"></i>
                     <span>Dashboard</span>
                 </a>
             </li>
             <li class="sidebar-title">Management</li>
-            <li class="sidebar-item ' . ($activeMenu === 'users' ? 'active' : '') . '">
+            <li class="sidebar-item ' . ($activeMenu === 'users' ? 'aktif' : '') . '">
                 <a href="index.php?page=user&action=index" class="sidebar-link">
                     <i class="bi bi-people-fill"></i>
                     <span>Users</span>
                 </a>
             </li>
-            <li class="sidebar-item ' . ($activeMenu === 'venues' ? 'active' : '') . '">
+            <li class="sidebar-item ' . ($activeMenu === 'venues' ? 'aktif' : '') . '">
                 <a href="index.php?page=venue&action=index" class="sidebar-link">
                     <i class="bi bi-geo-alt-fill"></i>
                     <span>Venues</span>
                 </a>
             </li>
-            <li class="sidebar-item ' . ($activeMenu === 'events' ? 'active' : '') . '">
+            <li class="sidebar-item ' . ($activeMenu === 'events' ? 'aktif' : '') . '">
                 <a href="index.php?page=event&action=index" class="sidebar-link">
                     <i class="bi bi-calendar-event-fill"></i>
                     <span>Events</span>
                 </a>
             </li>
-            <li class="sidebar-item ' . ($activeMenu === 'tickets' ? 'active' : '') . '">
+            <li class="sidebar-item ' . ($activeMenu === 'tickets' ? 'aktif' : '') . '">
                 <a href="index.php?page=ticket&action=index" class="sidebar-link">
                     <i class="bi bi-ticket-perforated-fill"></i>
                     <span>Tickets</span>
                 </a>
             </li>
-            <li class="sidebar-item ' . ($activeMenu === 'vouchers' ? 'active' : '') . '">
+            <li class="sidebar-item ' . ($activeMenu === 'vouchers' ? 'aktif' : '') . '">
                 <a href="index.php?page=voucher&action=index" class="sidebar-link">
                     <i class="bi bi-tag-fill"></i>
                     <span>Vouchers</span>
                 </a>
             </li>
             <li class="sidebar-title">Operations</li>
-            <li class="sidebar-item ' . ($activeMenu === 'orders' ? 'active' : '') . '">
+            <li class="sidebar-item ' . ($activeMenu === 'orders' ? 'aktif' : '') . '">
                 <a href="index.php?page=order&action=index" class="sidebar-link">
                     <i class="bi bi-cart-fill"></i>
                     <span>Orders</span>
                 </a>
             </li>
-            <li class="sidebar-item ' . ($activeMenu === 'checkin' ? 'active' : '') . '">
+            <li class="sidebar-item ' . ($activeMenu === 'checkin' ? 'aktif' : '') . '">
                 <a href="index.php?page=attendee&action=index" class="sidebar-link">
                     <i class="bi bi-qr-code-scan"></i>
                     <span>Check-in</span>

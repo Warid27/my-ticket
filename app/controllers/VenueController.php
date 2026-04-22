@@ -3,7 +3,7 @@ require_once 'app/core/BaseController.php';
 class VenueController extends BaseController
 {
     private VenueModel $model;
-    private string $indexPage = 'index.php?page=auth&action=login';
+    private string $indexPage = 'index.php?page=venue&action=index';
 
     public function __construct()
     {

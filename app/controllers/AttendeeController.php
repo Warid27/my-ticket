@@ -1,4 +1,4 @@
-<?php 
+<?php
 require_once 'app/core/BaseController.php';
 class AttendeeController extends BaseController
 {
@@ -14,25 +14,23 @@ class AttendeeController extends BaseController
 
     public function index(): void
     {
-        unset($_SESSION['error']);
-        unset($_SESSION['success']);
-        
+        $successCheck = $_SESSION['success-check'] ?? [];
         require_once 'app/models/OrderDetailModel.php';
         require_once 'app/models/OrderModel.php';
         require_once 'app/models/TicketModel.php';
         require_once 'app/models/EventModel.php';
-        
+
         $orderDetailModel = new OrderDetailModel();
         $orderModel = new OrderModel();
         $ticketModel = new TicketModel();
         $eventModel = new EventModel();
-        
+
         $search = $_GET['search'] ?? '';
         $page = (int) ($_GET['p'] ?? 1);
-        
+
         // Get all attendees with search and pagination
         $attendees = $this->model->paginate($search, $page);
-        
+
         // Enrich attendee data with order, ticket, and event information
         $attendeeData = [];
         foreach ($attendees['data'] as $attendee) {
@@ -41,7 +39,7 @@ class AttendeeController extends BaseController
                 $order = $orderModel->find($orderDetail['order_id']);
                 $ticket = $ticketModel->find($orderDetail['ticket_id']);
                 $event = $ticket ? $eventModel->find($ticket['event_id']) : null;
-                
+
                 $attendeeData[] = [
                     'id' => $attendee['id'],
                     'ticket_code' => $attendee['ticket_code'],
@@ -55,17 +53,19 @@ class AttendeeController extends BaseController
                 ];
             }
         }
-        
+
         $attendees['data'] = $attendeeData;
-        
+
         $this->layout->extend('mazer-dashboard');
         $this->layout->section('sidebarMenu', $this->getSidebarMenu('checkin'));
         $this->layout->render('admin/checkin/index', [
             'title' => 'Check-in - MyTicket',
             'activeMenu' => 'checkin',
             'attendees' => $attendees,
-            'search' => $search
+            'search' => $search,
+            'successCheck' => $successCheck
         ]);
+        unset($_SESSION['success-check']);
     }
 
     public function checkin(): void
@@ -114,22 +114,22 @@ class AttendeeController extends BaseController
         // Create notification for user (only if user exists)
         require_once 'app/models/NotificationModel.php';
         $notificationModel = new NotificationModel();
-        
+
         // Get event name for notification
         require_once 'app/models/EventModel.php';
         require_once 'app/models/TicketModel.php';
         $ticketModel = new TicketModel();
         $eventModel = new EventModel();
-        
+
         $ticket = $ticketModel->find($orderDetail['ticket_id']);
         $event = $ticket ? $eventModel->find($ticket['event_id']) : null;
         $eventName = $event ? $event['name'] : 'Event';
-        
+
         // Verify user exists before creating notification
         require_once 'app/models/UserModel.php';
         $userModel = new UserModel();
         $user = $userModel->find($order['user_id']);
-        
+
         if ($user) {
             $notificationModel->createNotification(
                 $order['user_id'],
@@ -139,7 +139,12 @@ class AttendeeController extends BaseController
             );
         }
 
-        $_SESSION['success'] = 'Check-in successful and notification sent to user';
+        $_SESSION['success'] = "Check-in berhasil dan notifikasi terkirim ke pengguna!";
+        $_SESSION['success-check'] = [
+            'ticketCode' => $ticketCode,
+            'eventName' => $eventName,
+            'userName' => $user['name']
+        ];
         header('Location: index.php?page=attendee&action=index');
         exit;
     }

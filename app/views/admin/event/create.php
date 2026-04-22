@@ -32,7 +32,7 @@
                     </div>
                     <div class="form-group mb-3">
                         <label for="date">Date</label>
-                        <input type="date" class="form-control" id="date" name="date" required>
+                        <input type="datetime" class="form-control" id="date" name="date" required>
                     </div>
                     <div class="form-group mb-3">
                         <label for="venue_id">Venue</label>
@@ -42,10 +42,6 @@
                                 <option value="<?= $v['id'] ?>"><?= htmlspecialchars($v['name']) ?></option>
                             <?php endforeach; ?>
                         </select>
-                    </div>
-                    <div class="form-group mb-3">
-                        <label for="image">Image</label>
-                        <input type="file" class="form-control" id="image" name="image" accept="image/*">
                     </div>
                     <div class="d-flex gap-2 mt-3">
                         <button type="submit" class="btn btn-primary">

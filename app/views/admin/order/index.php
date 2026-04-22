@@ -59,7 +59,7 @@
                                     $statusClass = 'bg-secondary';
                                     if ($o['status'] === 'paid') $statusClass = 'bg-success';
                                     elseif ($o['status'] === 'pending') $statusClass = 'bg-warning';
-                                    elseif ($o['status'] === 'cancelled') $statusClass = 'bg-danger';
+                                    elseif ($o['status'] === 'cancel') $statusClass = 'bg-danger';
                                     ?>
                                     <span class="badge <?= $statusClass ?>"><?= ucfirst($o['status']) ?></span>
                                 </td>

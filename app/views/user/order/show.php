@@ -39,7 +39,7 @@
                                     $statusClass = 'bg-secondary';
                                     if ($order['status'] === 'paid') $statusClass = 'bg-success';
                                     elseif ($order['status'] === 'pending') $statusClass = 'bg-warning';
-                                    elseif ($order['status'] === 'cancelled') $statusClass = 'bg-danger';
+                                    elseif ($order['status'] === 'cancel') $statusClass = 'bg-danger';
                                     ?>
                                     <span class="badge <?= $statusClass ?>"><?= ucfirst($order['status']) ?></span>
                                 </p>

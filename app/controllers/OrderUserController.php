@@ -1,5 +1,6 @@
 <?php
 require_once 'app/core/BaseController.php';
+
 class OrderUserController extends BaseController
 {
     private OrderModel $model;
@@ -15,11 +16,12 @@ class OrderUserController extends BaseController
     public function create(): void
     {
         require_once 'app/models/TicketModel.php';
-        $ticketModel = new TicketModel();
-        $ticket = $ticketModel->find((int) ($_GET['ticket_id'] ?? 0));
-
         require_once 'app/models/EventModel.php';
+
+        $ticketModel = new TicketModel();
         $eventModel = new EventModel();
+
+        $ticket = $ticketModel->find((int) ($_GET['ticket_id'] ?? 0));
         $event = $eventModel->find((int) ($_GET['event_id'] ?? 0));
 
         if (!$ticket || !$event) {
@@ -41,29 +43,38 @@ class OrderUserController extends BaseController
     public function applyVoucher(): void
     {
         header('Content-Type: application/json');
-        
+
         if (empty($_POST['voucher_code'])) {
             echo json_encode(['success' => false, 'message' => 'Voucher code is required']);
             exit;
         }
-        
+
         require_once 'app/models/VoucherModel.php';
         $voucherModel = new VoucherModel();
         $voucher = $voucherModel->findByCode($_POST['voucher_code']);
-        
-        if (!$voucher) {
-            echo json_encode(['success' => false, 'message' => 'Invalid voucher code']);
+
+        if (!$voucher || $voucher['status'] !== 'aktif') {
+            echo json_encode(['success' => false, 'message' => 'Invalid or inactive voucher']);
             exit;
         }
-        
+
         if ($voucher['quota'] <= 0) {
-            echo json_encode(['success' => false, 'message' => 'Voucher quota has been exhausted']);
+            echo json_encode(['success' => false, 'message' => 'Voucher quota exhausted']);
             exit;
         }
-        
+
+        $subTotal = (int) ($_POST['subtotal'] ?? 0);
+        $discountTotal = 0;
+
+        if ($voucher['type'] === 'value') {
+            $discountTotal = min($voucher['discount'], $subTotal);
+        } else {
+            $discountTotal = $subTotal * ($voucher['discount'] / 100);
+        }
+
         echo json_encode([
             'success' => true,
-            'discount' => $voucher['discount'],
+            'discount' => $discountTotal,
             'type' => $voucher['type'],
             'message' => 'Voucher applied successfully!'
         ]);
@@ -72,6 +83,8 @@ class OrderUserController extends BaseController
 
     public function store(): void
     {
+        session_start();
+
         require_once 'app/models/TicketModel.php';
         require_once 'app/models/OrderModel.php';
         require_once 'app/models/OrderDetailModel.php';
@@ -93,56 +106,44 @@ class OrderUserController extends BaseController
             exit;
         }
 
-        if ($ticket['quota'] <= 0) {
-            $_SESSION['error'] = 'Ticket sold out! No quota available.';
-            header("Location: index.php?page=order&action=create&ticket_id=" . $_POST['ticket_id'] . "&event_id=" . $_POST['event_id']);
+        if ($qty <= 0 || $qty > $ticket['quota']) {
+            $_SESSION['error'] = 'Invalid quantity!';
+            header("Location: index.php?page=order&action=create&ticket_id={$_POST['ticket_id']}&event_id={$_POST['event_id']}");
             exit;
         }
 
-        if ($qty <= 0) {
-            $_SESSION['error'] = 'Quantity must be greater than 0!';
-            header("Location: index.php?page=order&action=create&ticket_id=" . $_POST['ticket_id'] . "&event_id=" . $_POST['event_id']);
-            exit;
-        }
-
-        if ($qty > $ticket['quota']) {
-            $_SESSION['error'] = 'Kuota tidak cukup!';
-            header("Location: index.php?page=order&action=create&ticket_id=" . $_POST['ticket_id'] . "&event_id=" . $_POST['event_id']);
-            exit;
-        }
+        // Voucher setup
         $voucher_id = null;
         $discount = 0;
         $discountType = null;
+        $voucher = null;
 
         if (!empty($_POST['voucher_code'])) {
-            require_once 'app/models/VoucherModel.php';
-            $voucherModel = new VoucherModel();
             $voucher = $voucherModel->findByCode($_POST['voucher_code']);
 
-            if ($voucher && $voucher['quota'] > 0) {
+            if ($voucher && $voucher['quota'] > 0 && $voucher['status'] === 'aktif') {
                 $voucher_id = $voucher['id'];
                 $discount = $voucher['discount'];
                 $discountType = $voucher['type'];
-
-                $voucherModel->update($voucher_id, [
-                    'quota' => $voucher['quota'] - 1
-                ]);
             }
         }
 
+        // Hitung total
         $subTotal = $ticket['price'] * $qty;
-        $discountTotal = 0;
 
         if ($discountType === 'value') {
-            $discountTotal = $discount;
+            $discountTotal = min($discount, $subTotal);
         } elseif ($discountType === 'percentage') {
             $discountTotal = $subTotal * ($discount / 100);
+        } else {
+            $discountTotal = 0;
         }
 
-        $total = max(0, $subTotal - $discountTotal);
+        $total = $subTotal - $discountTotal;
 
         $db = getDB();
         $db->beginTransaction();
+
         try {
             $order_id = $orderModel->insert([
                 'user_id' => $_SESSION['user_id'],
@@ -167,33 +168,50 @@ class OrderUserController extends BaseController
                 ]);
             }
 
-            $ticketModel->update($ticket['id'], ['quota' => $ticket['quota'] - $qty]);
+            // update ticket quota
+            $ticketModel->update($ticket['id'], [
+                'quota' => $ticket['quota'] - $qty
+            ]);
+
+            // update voucher quota (AMAN karena di dalam transaction)
+            if ($voucher_id) {
+                $voucherModel->update($voucher_id, [
+                    'quota' => $voucher['quota'] - 1
+                ]);
+            }
 
             $db->commit();
+
             header("Location: index.php?page=order&action=show&id=$order_id");
             exit;
+
         } catch (PDOException $e) {
             $db->rollBack();
             $_SESSION['error'] = 'Order gagal: ' . $e->getMessage();
-            header("Location: index.php?page=order&action=create&ticket_id=" . $_POST['ticket_id']);
+
+            header("Location: index.php?page=order&action=create&ticket_id={$_POST['ticket_id']}&event_id={$_POST['event_id']}");
             exit;
         }
     }
+
     public function show(): void
     {
         $order = $this->model->find((int) $_GET['id']);
+
         require_once 'app/models/OrderDetailModel.php';
+        require_once 'app/models/AttendeeModel.php';
 
         $detailModel = new OrderDetailModel();
-        $details = $detailModel->byOrder((int) $_GET['id']);
-
-        require_once 'app/models/AttendeeModel.php';
         $attendeeModel = new AttendeeModel();
+
+        $details = $detailModel->byOrder($order['id']);
         $attendees = [];
 
         foreach ($details as $detail) {
-            $detailAttendees = $attendeeModel->query("SELECT * FROM attendees WHERE detail_id = ?", [$detail['id']]);
-            $attendees = [...$attendees, $detailAttendees];
+            $attendees = array_merge(
+                $attendees,
+                $attendeeModel->query("SELECT * FROM attendees WHERE detail_id = ?", [$detail['id']])
+            );
         }
 
         $this->layout->extend('mazer-dashboard');
@@ -210,6 +228,7 @@ class OrderUserController extends BaseController
     public function history(): void
     {
         $orders = $this->model->byUser($_SESSION['user_id']);
+
         $this->layout->extend('mazer-dashboard');
         $this->layout->section('sidebarMenu', $this->getSidebarMenu('orders'));
         $this->layout->render('user/order/history', [
@@ -224,29 +243,21 @@ class OrderUserController extends BaseController
         $orderId = (int) $_GET['id'];
         $order = $this->model->find($orderId);
 
-        if (!$order) {
-            $_SESSION['error'] = 'Order not found!';
+        if (!$order || $order['user_id'] !== $_SESSION['user_id']) {
+            $_SESSION['error'] = 'Unauthorized or not found!';
             header("Location: index.php?page=order&action=history");
             exit;
         }
 
-        // Verify order belongs to current user
-        if ($order['user_id'] !== $_SESSION['user_id']) {
-            $_SESSION['error'] = 'Unauthorized access!';
-            header("Location: index.php?page=order&action=history");
-            exit;
-        }
-
-        // Only pending orders can be paid
         if ($order['status'] !== 'pending') {
-            $_SESSION['error'] = 'Order cannot be paid. Current status: ' . $order['status'];
+            $_SESSION['error'] = 'Order cannot be paid.';
             header("Location: index.php?page=order&action=show&id=$orderId");
             exit;
         }
 
-        // Update order status to paid
         $this->model->update($orderId, ['status' => 'paid']);
-        $_SESSION['success'] = 'Payment successful! Order status updated to Paid.';
+
+        $_SESSION['success'] = 'Payment successful!';
         header("Location: index.php?page=order&action=show&id=$orderId");
         exit;
     }
@@ -256,22 +267,14 @@ class OrderUserController extends BaseController
         $orderId = (int) $_GET['id'];
         $order = $this->model->find($orderId);
 
-        if (!$order) {
-            $_SESSION['error'] = 'Order not found!';
+        if (!$order || $order['user_id'] !== $_SESSION['user_id']) {
+            $_SESSION['error'] = 'Unauthorized!';
             header("Location: index.php?page=order&action=history");
             exit;
         }
 
-        // Verify order belongs to current user
-        if ($order['user_id'] !== $_SESSION['user_id']) {
-            $_SESSION['error'] = 'Unauthorized access!';
-            header("Location: index.php?page=order&action=history");
-            exit;
-        }
-
-        // Only pending orders can be cancelled
         if ($order['status'] !== 'pending') {
-            $_SESSION['error'] = 'Order cannot be cancelled. Current status: ' . $order['status'];
+            $_SESSION['error'] = 'Order cannot be cancelled.';
             header("Location: index.php?page=order&action=show&id=$orderId");
             exit;
         }
@@ -288,34 +291,34 @@ class OrderUserController extends BaseController
         $db->beginTransaction();
 
         try {
-            // Get order details to restore ticket quota
             $details = $orderDetailModel->byOrder($orderId);
 
             foreach ($details as $detail) {
                 $ticket = $ticketModel->find($detail['ticket_id']);
                 if ($ticket) {
-                    // Restore ticket quota
-                    $newQuota = $ticket['quota'] + $detail['qty'];
-                    $ticketModel->update($detail['ticket_id'], ['quota' => $newQuota]);
+                    $ticketModel->update($detail['ticket_id'], [
+                        'quota' => $ticket['quota'] + $detail['qty']
+                    ]);
                 }
             }
 
-            // Restore voucher quota if voucher was used
             if ($order['voucher_id']) {
                 $voucher = $voucherModel->find($order['voucher_id']);
                 if ($voucher) {
-                    $voucherModel->update($order['voucher_id'], ['quota' => $voucher['quota'] + 1]);
+                    $voucherModel->update($order['voucher_id'], [
+                        'quota' => $voucher['quota'] + 1
+                    ]);
                 }
             }
 
-            // Update order status to cancelled
             $this->model->update($orderId, ['status' => 'cancel']);
 
             $db->commit();
-            $_SESSION['success'] = 'Order cancelled successfully. Ticket quota has been restored.';
+
+            $_SESSION['success'] = 'Order cancelled successfully!';
         } catch (PDOException $e) {
             $db->rollBack();
-            $_SESSION['error'] = 'Failed to cancel order: ' . $e->getMessage();
+            $_SESSION['error'] = 'Cancel failed: ' . $e->getMessage();
         }
 
         header("Location: index.php?page=order&action=history");

@@ -20,31 +20,59 @@
 <div class="page-content">
     <section class="section">
         <div class="card">
+            <?php if (isset($_SESSION['error'])) {
+                echo $_SESSION['error'];
+            } ?>
             <div class="card-header">
                 <h4 class="card-title">Ticket Check-in</h4>
             </div>
             <div class="card-body">
                 <?php if (!empty($_SESSION['error'])): ?>
                     <div class="alert alert-danger">
-                        <?= $_SESSION['error']; unset($_SESSION['error']); ?>
-                    </div>
-                <?php endif; ?>
-                
-                <?php if (!empty($_SESSION['success'])): ?>
-                    <div class="alert alert-success">
-                        <?= $_SESSION['success']; unset($_SESSION['success']); ?>
+                        <?= $_SESSION['error'];
+                        unset($_SESSION['error']); ?>
                     </div>
                 <?php endif; ?>
 
                 <form method="POST" action="index.php?page=attendee&action=checkin">
                     <div class="form-group">
                         <label for="ticket_code">Ticket Code</label>
-                        <input type="text" class="form-control form-control-lg" id="ticket_code" name="ticket_code" required autofocus placeholder="Enter ticket code">
+                        <input type="text" class="form-control form-control-lg" id="ticket_code" name="ticket_code"
+                            required autofocus placeholder="Enter ticket code">
                     </div>
                     <button type="submit" class="btn btn-primary btn-lg mt-3">
                         <i class="bi bi-qr-code-scan"></i> Check-in
                     </button>
                 </form>
+
+                <?php if (!empty($successCheck)): ?>
+                    <div class="alert alert-success d-flex align-items-start gap-3 mt-3">
+
+                        <i class="bi bi-check-circle-fill fs-4"></i>
+
+                        <div>
+                            <div class="fw-bold mb-1">Check-in Berhasil!</div>
+
+                            <div class="small text-muted">
+                                Kode Tiket: <span class="text-dark fw-semibold">
+                                    <?= htmlspecialchars($successCheck['ticketCode'] ?? '') ?>
+                                </span>
+                            </div>
+
+                            <div class="small text-muted">
+                                Event: <span class="text-dark fw-semibold">
+                                    <?= htmlspecialchars($successCheck['eventName'] ?? '') ?>
+                                </span>
+                            </div>
+
+                            <div class="small text-muted">
+                                Nama: <span class="text-dark fw-semibold">
+                                    <?= htmlspecialchars($successCheck['userName'] ?? '') ?>
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                <?php endif; unset($successCheck)?>
             </div>
         </div>
     </section>
@@ -61,7 +89,9 @@
                             <input type="hidden" name="page" value="attendee">
                             <input type="hidden" name="action" value="index">
                             <div class="input-group">
-                                <input type="text" class="form-control" name="search" placeholder="Search by ticket code or status..." value="<?= htmlspecialchars($search ?? '') ?>">
+                                <input type="text" class="form-control" name="search"
+                                    placeholder="Search by ticket code or status..."
+                                    value="<?= htmlspecialchars($search ?? '') ?>">
                                 <button type="submit" class="btn btn-outline-secondary">
                                     <i class="bi bi-search"></i> Search
                                 </button>
@@ -104,7 +134,8 @@
                                             <?php elseif ($attendee['order_status'] === 'cancel'): ?>
                                                 <span class="badge bg-danger">Cancelled</span>
                                             <?php else: ?>
-                                                <span class="badge bg-secondary"><?= htmlspecialchars($attendee['order_status']) ?></span>
+                                                <span
+                                                    class="badge bg-secondary"><?= htmlspecialchars($attendee['order_status']) ?></span>
                                             <?php endif; ?>
                                         </td>
                                         <td><?= htmlspecialchars($attendee['order_date']) ?></td>
@@ -133,19 +164,22 @@
                         <ul class="pagination justify-content-center">
                             <?php if ($attendees['hasPrev']): ?>
                                 <li class="page-item">
-                                    <a class="page-link" href="?page=attendee&action=index&p=<?= $attendees['currentPage'] - 1 ?><?= !empty($search) ? '&search=' . urlencode($search) : '' ?>">Previous</a>
+                                    <a class="page-link"
+                                        href="?page=attendee&action=index&p=<?= $attendees['currentPage'] - 1 ?><?= !empty($search) ? '&search=' . urlencode($search) : '' ?>">Previous</a>
                                 </li>
                             <?php endif; ?>
-                            
+
                             <?php for ($i = 1; $i <= $attendees['lastPage']; $i++): ?>
-                                <li class="page-item <?= $i === $attendees['currentPage'] ? 'active' : '' ?>">
-                                    <a class="page-link" href="?page=attendee&action=index&p=<?= $i ?><?= !empty($search) ? '&search=' . urlencode($search) : '' ?>"><?= $i ?></a>
+                                <li class="page-item <?= $i === $attendees['currentPage'] ? 'aktif' : '' ?>">
+                                    <a class="page-link"
+                                        href="?page=attendee&action=index&p=<?= $i ?><?= !empty($search) ? '&search=' . urlencode($search) : '' ?>"><?= $i ?></a>
                                 </li>
                             <?php endfor; ?>
-                            
+
                             <?php if ($attendees['hasMore']): ?>
                                 <li class="page-item">
-                                    <a class="page-link" href="?page=attendee&action=index&p=<?= $attendees['currentPage'] + 1 ?><?= !empty($search) ? '&search=' . urlencode($search) : '' ?>">Next</a>
+                                    <a class="page-link"
+                                        href="?page=attendee&action=index&p=<?= $attendees['currentPage'] + 1 ?><?= !empty($search) ? '&search=' . urlencode($search) : '' ?>">Next</a>
                                 </li>
                             <?php endif; ?>
                         </ul>

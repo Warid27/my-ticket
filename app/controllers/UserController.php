@@ -24,7 +24,7 @@ class UserController extends BaseController
                 </a>
             </li>
             <li class="sidebar-title">Management</li>
-            <li class="sidebar-item ' . ($activeMenu === 'users' ? 'active' : '') . '">
+            <li class="sidebar-item ' . ($activeMenu === 'users' ? 'aktif' : '') . '">
                 <a href="index.php?page=user&action=index" class="sidebar-link">
                     <i class="bi bi-people-fill"></i>
                     <span>Users</span>

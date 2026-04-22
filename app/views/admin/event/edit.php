@@ -33,7 +33,7 @@
                     </div>
                     <div class="form-group mb-3">
                         <label for="date">Date</label>
-                        <input type="date" class="form-control" id="date" name="date" value="<?= $event['date'] ?>" required>
+                        <input type="datetime" class="form-control" id="date" name="date" value="<?= $event['date'] ?>" required>
                     </div>
                     <div class="form-group mb-3">
                         <label for="venue_id">Venue</label>
@@ -45,13 +45,6 @@
                                 </option>
                             <?php endforeach; ?>
                         </select>
-                    </div>
-                    <div class="form-group mb-3">
-                        <label for="image">Image</label>
-                        <input type="file" class="form-control" id="image" name="image" accept="image/*">
-                        <?php if ($event['image']): ?>
-                            <small class="text-muted">Current image: <?= $event['image'] ?></small>
-                        <?php endif; ?>
                     </div>
                     <div class="d-flex gap-2 mt-3">
                         <button type="submit" class="btn btn-primary">

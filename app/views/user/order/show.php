@@ -95,6 +95,20 @@
                         <a href="index.php?page=ticket&action=show&order_id=<?= $order['id'] ?>" class="btn btn-primary">
                             <i class="bi bi-qr-code"></i> View QR Codes
                         </a>
+                        
+                        <?php if ($order['status'] === 'pending'): ?>
+                            <a href="index.php?page=order&action=pay&id=<?= $order['id'] ?>" class="btn btn-success ms-2" 
+                               onclick="return confirm('Are you sure you want to pay for this order?')">
+                                <i class="bi bi-credit-card"></i> Pay Order
+                            </a>
+                        <?php endif; ?>
+                        
+                        <?php if ($order['status'] === 'pending'): ?>
+                            <a href="index.php?page=order&action=cancel&id=<?= $order['id'] ?>" class="btn btn-danger ms-2"
+                               onclick="return confirm('Are you sure you want to cancel this order?')">
+                                <i class="bi bi-x-circle"></i> Cancel Order
+                            </a>
+                        <?php endif; ?>
                     </div>
                 </div>
             </div>

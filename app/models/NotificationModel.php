@@ -4,6 +4,7 @@ require_once 'app/core/BaseModel.php';
 class NotificationModel extends BaseModel
 {
     protected string $table = 'notifications';
+    protected array $fillable = ['user_id', 'title', 'message', 'type', 'is_read'];
 
     public function createNotification(int $userId, string $title, string $message, string $type = 'system'): bool
     {

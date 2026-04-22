@@ -137,9 +137,6 @@ class AttendeeController extends BaseController
                 "Your ticket for '{$eventName}' has been successfully checked in. Enjoy the event!",
                 'checkin'
             );
-        } else {
-            // Log error for debugging but don't fail the check-in
-            error_log("Notification failed: User ID {$order['user_id']} not found for order {$order['id']}");
         }
 
         $_SESSION['success'] = 'Check-in successful and notification sent to user';

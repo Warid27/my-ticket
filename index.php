@@ -17,6 +17,7 @@ $map = [
     'order'     => 'OrderController',
     'attendee'  => 'AttendeeController',
     'dashboard' => 'DashboardController',
+    'notification' => 'NotificationController',
 ];
 
 // 1. Guard Clause: Cek apakah halaman ada di map

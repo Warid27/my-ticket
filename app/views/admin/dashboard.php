@@ -82,34 +82,67 @@
     </div>
 
     <?php if (!empty($salesData)): ?>
-    <div class="row">
-        <div class="col-12">
-            <div class="card">
-                <div class="card-header">
-                    <h4>Top Selling Events</h4>
-                </div>
-                <div class="card-body">
-                    <div class="table-responsive">
-                        <table class="table table-striped">
-                            <thead>
-                                <tr>
-                                    <th>Event Name</th>
-                                    <th>Tickets Sold</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <?php foreach ($salesData as $sale): ?>
+        <div class="row">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header">
+                        <h4>Top Selling Events</h4>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-striped">
+                                <thead>
                                     <tr>
-                                        <td><?= htmlspecialchars($sale['event_name']) ?></td>
-                                        <td><?= $sale['total_sold'] ?></td>
+                                        <th>Event Name</th>
+                                        <th>Tickets Sold</th>
                                     </tr>
-                                <?php endforeach; ?>
-                            </tbody>
-                        </table>
+                                </thead>
+                                <tbody>
+                                    <?php foreach ($salesData as $sale): ?>
+                                        <tr>
+                                            <td><?= htmlspecialchars($sale['event_name']) ?></td>
+                                            <td><?= $sale['total_sold'] ?></td>
+                                        </tr>
+                                    <?php endforeach; ?>
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
-    </div>
     <?php endif; ?>
 </div>
+<script src="app/assets/extensions/apexcharts/apexcharts.min.js"></script>
+
+<script>
+    const salesData = <?= json_encode($salesData ?? []) ?>;
+
+    const chartEl = document.querySelector("#chart-sales-overview");
+
+    if (chartEl && salesData.length > 0) {
+        const categories = salesData.map(item => item.event_name);
+        const dataSales = salesData.map(item => parseInt(item.total_sold));
+
+        var optionsSalesOverview = {
+            chart: {
+                type: "bar",
+                height: 300,
+            },
+            dataLabels: {
+                enabled: false,
+            },
+            series: [{
+                name: "Tiket Terjual",
+                data: dataSales,
+            }],
+            xaxis: {
+                categories: categories,
+            },
+            colors: ["#435ebe"],
+        };
+
+        var chart = new ApexCharts(chartEl, optionsSalesOverview);
+        chart.render();
+    }
+</script>

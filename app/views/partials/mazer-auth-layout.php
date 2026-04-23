@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -9,6 +10,7 @@
     <link rel="stylesheet" href="<?= $this->asset('compiled/css/app-dark.css') ?>">
     <link rel="stylesheet" href="<?= $this->asset('compiled/css/auth.css') ?>">
 </head>
+
 <body>
     <script src="<?= $this->asset('static/js/initTheme.js') ?>"></script>
     <div id="auth">
@@ -16,5 +18,31 @@
     </div>
     <script src="<?= $this->asset('static/js/components/dark.js') ?>"></script>
     <script src="<?= $this->asset('compiled/js/app.js') ?>"></script>
+    <script>
+        // patch prototype setelah app.js load
+        if (window.sidebar && window.sidebar.__proto__) {
+
+            window.sidebar.__proto__.isElementInViewport = function (z) {
+                if (!z) return false;
+
+                const s = z.getBoundingClientRect();
+                return (
+                    s.top >= 0 &&
+                    s.left >= 0 &&
+                    s.bottom <= (window.innerHeight || document.documentElement.clientHeight) &&
+                    s.right <= (window.innerWidth || document.documentElement.clientWidth)
+                );
+            };
+
+            window.sidebar.__proto__.forceElementVisibility = function (z) {
+                if (!z) return;
+
+                if (!this.isElementInViewport(z)) {
+                    z.scrollIntoView(false);
+                }
+            };
+        }
+    </script>
 </body>
+
 </html>

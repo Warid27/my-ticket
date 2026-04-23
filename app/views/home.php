@@ -1,12 +1,16 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>MyTicket - Event Ticketing Platform</title>
     <link href="app/assets/compiled/css/app.css" rel="stylesheet">
-    <link href="app/assets/extensions/bootstrap-icons/bootstrap-icons/bootstrap-icons.css" rel="stylesheet">
+    <link rel="shortcut icon" href="app/assets/compiled/svg/favicon.svg" type="image/x-icon">
+    
+
 </head>
+
 <body>
     <div id="app">
         <!-- Navigation -->
@@ -28,7 +32,8 @@
                 <div class="row align-items-center">
                     <div class="col-lg-6">
                         <h1 class="display-4 fw-bold mb-3">Discover Amazing Events</h1>
-                        <p class="lead text-muted mb-4">Book tickets for concerts, conferences, workshops, and more. Your one-stop platform for event ticketing.</p>
+                        <p class="lead text-muted mb-4">Book tickets for concerts, conferences, workshops, and more.
+                            Your one-stop platform for event ticketing.</p>
                         <div class="d-flex gap-3">
                             <a href="index.php?page=auth&action=register" class="btn btn-primary btn-lg">
                                 <i class="bi bi-person-plus"></i> Get Started
@@ -62,7 +67,8 @@
                                     <i class="bi bi-lightning-charge text-primary" style="font-size: 3rem;"></i>
                                 </div>
                                 <h5 class="card-title fw-bold">Fast Booking</h5>
-                                <p class="card-text text-muted">Book your tickets in seconds with our streamlined checkout process.</p>
+                                <p class="card-text text-muted">Book your tickets in seconds with our streamlined
+                                    checkout process.</p>
                             </div>
                         </div>
                     </div>
@@ -73,7 +79,8 @@
                                     <i class="bi bi-shield-check text-success" style="font-size: 3rem;"></i>
                                 </div>
                                 <h5 class="card-title fw-bold">Secure Payments</h5>
-                                <p class="card-text text-muted">Your transactions are protected with industry-standard security.</p>
+                                <p class="card-text text-muted">Your transactions are protected with industry-standard
+                                    security.</p>
                             </div>
                         </div>
                     </div>
@@ -84,7 +91,8 @@
                                     <i class="bi bi-qr-code text-warning" style="font-size: 3rem;"></i>
                                 </div>
                                 <h5 class="card-title fw-bold">Digital Tickets</h5>
-                                <p class="card-text text-muted">Get QR code tickets directly to your device for easy check-in.</p>
+                                <p class="card-text text-muted">Get QR code tickets directly to your device for easy
+                                    check-in.</p>
                             </div>
                         </div>
                     </div>
@@ -111,4 +119,5 @@
         </footer>
     </div>
 </body>
+
 </html>

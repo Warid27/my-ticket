@@ -32,7 +32,7 @@
                     </div>
                     <div class="form-group mb-3">
                         <label for="date">Date</label>
-                        <input type="datetime" class="form-control" id="date" name="date" required>
+                        <input type="datetime-local" class="form-control" id="date" name="date" required>
                     </div>
                     <div class="form-group mb-3">
                         <label for="venue_id">Venue</label>

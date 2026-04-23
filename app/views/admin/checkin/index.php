@@ -20,9 +20,6 @@
 <div class="page-content">
     <section class="section">
         <div class="card">
-            <?php if (isset($_SESSION['error'])) {
-                echo $_SESSION['error'];
-            } ?>
             <div class="card-header">
                 <h4 class="card-title">Ticket Check-in</h4>
             </div>

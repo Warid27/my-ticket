@@ -30,6 +30,15 @@ class OrderUserController extends BaseController
             exit;
         }
 
+
+        $isExpired = strtotime($event['date']) < time();
+
+        if ($isExpired) {
+            $_SESSION['error'] = 'Event sudah berakhir (expired).';
+            header('Location: index.php?page=event&action=index');
+            exit;
+        }
+
         $this->layout->extend('mazer-dashboard');
         $this->layout->section('sidebarMenu', $this->getSidebarMenu('orders'));
         $this->layout->render('user/order/create', [
@@ -103,6 +112,15 @@ class OrderUserController extends BaseController
         if (!$ticket) {
             $_SESSION['error'] = 'Ticket not found!';
             header("Location: index.php?page=event&action=index");
+            exit;
+        }
+
+
+        $isExpired = strtotime($event['date']) < time();
+
+        if ($isExpired) {
+            $_SESSION['error'] = 'Event sudah berakhir (expired).';
+            header('Location: index.php?page=event&action=index');
             exit;
         }
 

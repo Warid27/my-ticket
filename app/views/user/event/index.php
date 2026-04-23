@@ -6,6 +6,12 @@
 <div class="page-content">
     <div class="row">
         <div class="col-12">
+            <?php if (!empty($_SESSION['error'])): ?>
+                <div class="alert alert-danger">
+                    <?= $_SESSION['error'];
+                    unset($_SESSION['error']); ?>
+                </div>
+            <?php endif; ?>
             <div class="card">
                 <div class="card-header">
                     <h4 class="card-title">Available Events</h4>
@@ -29,7 +35,19 @@
                                             <td><?= $e['date'] ?></td>
                                             <td><?= htmlspecialchars($e['venue_name']) ?></td>
                                             <td>
-                                                <a href="index.php?page=event&action=show&id=<?= $e['id'] ?>" class="btn btn-primary btn-sm">View & Buy Tickets</a>
+                                                <?php
+                                                $eventTime = strtotime($e['date']);
+                                                $now = time();
+                                                ?>
+
+                                                <?php if ($eventTime < $now): ?>
+                                                    <span class="badge bg-danger">Kadaluwarsa</span>
+                                                <?php else: ?>
+                                                    <a href="index.php?page=event&action=show&id=<?= $e['id'] ?>"
+                                                        class="btn btn-primary btn-sm">
+                                                        Lihat dan Beli Tiket
+                                                    </a>
+                                                <?php endif; ?>
                                             </td>
                                         </tr>
                                     <?php endforeach; ?>

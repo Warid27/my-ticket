@@ -36,7 +36,6 @@
             </div>
             <div class="card-body">
                 <?php require_once 'app/views/partials/search-pagination.php'; ?>
-
                 <div class="table-responsive">
                     <table class="table table-striped" id="eventsTable">
                         <thead>

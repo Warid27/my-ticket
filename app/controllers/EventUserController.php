@@ -33,7 +33,8 @@ class EventUserController extends BaseController
         $venueModel = new VenueModel();
         $venue = $venueModel->find($event['venue_id']);
         $event['venue_name'] = $venue['name'];
-
+        $event['is_expired'] = strtotime($event['date']) < time();
+        
         require_once 'app/models/TicketModel.php';
         $ticketModel = new TicketModel();
         $tickets = $ticketModel->byEvent((int) $_GET['id']);

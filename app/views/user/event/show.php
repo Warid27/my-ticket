@@ -17,7 +17,7 @@
             </div>
         </div>
     </div>
-    
+
     <div class="row mt-3">
         <div class="col-12">
             <div class="card">
@@ -43,10 +43,15 @@
                                             <td>Rp <?= number_format($t['price']) ?></td>
                                             <td><?= $t['quota'] ?></td>
                                             <td>
-                                                <?php if ($t['quota'] > 0): ?>
-                                                    <a href="index.php?page=order&action=create&ticket_id=<?= $t['id'] ?>&event_id=<?= $event['id'] ?>" class="btn btn-primary btn-sm">Buy</a>
+                                                <?php if ($event['is_expired']): ?>
+                                                    <span class="badge bg-danger">Kadaluwarsa</span>
+                                                <?php elseif ($t['quota'] > 0): ?>
+                                                    <a href="index.php?page=order&action=create&ticket_id=<?= $t['id'] ?>&event_id=<?= $event['id'] ?>"
+                                                        class="btn btn-primary btn-sm">
+                                                        Beli
+                                                    </a>
                                                 <?php else: ?>
-                                                    <span class="badge bg-secondary">Sold Out</span>
+                                                    <span class="badge bg-secondary">Habis</span>
                                                 <?php endif; ?>
                                             </td>
                                         </tr>

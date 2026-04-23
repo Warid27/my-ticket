@@ -16,6 +16,8 @@ class EventController extends BaseController
     public function index(): void
     {
         require_once 'app/models/EventModel.php';
+        require_once 'app/models/VenueModel.php';
+        $venueModel = new VenueModel();
         $eventModel = new EventModel();
         $search = $_GET['search'] ?? '';
         $page = (int) ($_GET['p'] ?? 1);
@@ -24,7 +26,7 @@ class EventController extends BaseController
 
         $eventsWithVenue = [];
         foreach ($events as $event) {
-            $venue = $eventModel->find($event['venue_id']);
+            $venue = $venueModel->find($event['venue_id']);
             $event['venue_name'] = $venue['name'] ?? 'Tidak Diketahui';
             $eventsWithVenue[] = $event;
         }

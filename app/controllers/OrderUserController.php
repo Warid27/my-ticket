@@ -114,7 +114,7 @@ class OrderUserController extends BaseController
 
         if (!$ticket || !$event) {
             $_SESSION['error'] = 'Ticket or event not found!';
-            header("Location: index.php?page=event&action=index");
+            header("L   ocation: index.php?page=event&action=index");
             exit;
         }
 
@@ -160,6 +160,12 @@ class OrderUserController extends BaseController
         }
 
         $total = $subTotal - $discountTotal;
+
+        if ($total < 1) {
+            $_SESSION['error'] = 'Voucher cannot be applied: total amount would be negative.';
+            header("Location: index.php?page=order&action=create&ticket_id={$_POST['ticket_id']}&event_id={$_POST['event_id']}");
+            exit;
+        }
 
         $db = getDB();
         $db->beginTransaction();
@@ -271,6 +277,14 @@ class OrderUserController extends BaseController
 
         if ($order['status'] !== 'pending') {
             $_SESSION['error'] = 'Order cannot be paid.';
+            header("Location: index.php?page=order&action=show&id=$orderId");
+            exit;
+        }
+
+        // Handle free orders (total = 0) - skip Xendit and mark as paid
+        if ($order['total'] <= 0) {
+            $this->model->update($orderId, ['status' => 'paid']);
+            $_SESSION['success'] = 'Order is free! No payment required.';
             header("Location: index.php?page=order&action=show&id=$orderId");
             exit;
         }

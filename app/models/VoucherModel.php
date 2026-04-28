@@ -7,8 +7,8 @@ class VoucherModel extends BaseModel
     protected string $table = 'vouchers';
     protected array $fillable = ['code', 'discount', 'quota', 'status', 'type'];
 
-    public function findByCode(string $code): array|false
+    public function findByCode(string $code): ?array
     {
-        return $this->queryOne("SELECT * FROM vouchers WHERE code = ? AND status = 'aktif' and quota > 0", [$code]);
+        return $this->queryOne("SELECT * FROM vouchers WHERE code = ?", [$code]);
     }
 }

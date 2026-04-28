@@ -62,13 +62,18 @@ class OrderUserController extends BaseController
         $voucherModel = new VoucherModel();
         $voucher = $voucherModel->findByCode($_POST['voucher_code']);
 
-        if (!$voucher || $voucher['status'] !== 'aktif') {
-            echo json_encode(['success' => false, 'message' => 'Invalid or inactive voucher']);
+        if (!$voucher) {
+            echo json_encode(['success' => false, 'message' => 'Voucher tidak ditemukan']);
+            exit;
+        }
+
+        if ($voucher['status'] !== 'aktif') {
+            echo json_encode(['success' => false, 'message' => 'Voucher invalid']);
             exit;
         }
 
         if ($voucher['quota'] <= 0) {
-            echo json_encode(['success' => false, 'message' => 'Voucher quota exhausted']);
+            echo json_encode(['success' => false, 'message' => 'Voucher habis']);
             exit;
         }
 
@@ -141,11 +146,27 @@ class OrderUserController extends BaseController
         if (!empty($_POST['voucher_code'])) {
             $voucher = $voucherModel->findByCode($_POST['voucher_code']);
 
-            if ($voucher && $voucher['quota'] > 0 && $voucher['status'] === 'aktif') {
-                $voucher_id = $voucher['id'];
-                $discount = $voucher['discount'];
-                $discountType = $voucher['type'];
+            if (!$voucher) {
+                $_SESSION['error'] = 'Voucher tidak ditemukan.';
+                header("Location: index.php?page=order&action=create&ticket_id={$_POST['ticket_id']}&event_id={$_POST['event_id']}");
+                exit;
             }
+
+            if ($voucher['status'] !== 'aktif') {
+                $_SESSION['error'] = 'Voucher invalid.';
+                header("Location: index.php?page=order&action=create&ticket_id={$_POST['ticket_id']}&event_id={$_POST['event_id']}");
+                exit;
+            }
+
+            if ($voucher['quota'] <= 0) {
+                $_SESSION['error'] = 'Voucher habis.';
+                header("Location: index.php?page=order&action=create&ticket_id={$_POST['ticket_id']}&event_id={$_POST['event_id']}");
+                exit;
+            }
+
+            $voucher_id = $voucher['id'];
+            $discount = $voucher['discount'];
+            $discountType = $voucher['type'];
         }
 
         // Hitung total

@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?= htmlspecialchars($title ?? 'MyTicket') ?></title>
+    <link rel="stylesheet" href="<?= $this->asset('extensions/toastify-js/src/toastify.css') ?>">
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; }
         body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
@@ -29,12 +30,37 @@
         .actions { margin-bottom: 20px; }
         .actions a, .actions button { margin-right: 10px; }
     </style>
+    <script src="<?= $this->asset('extensions/toastify-js/src/toastify.js') ?>"></script>
 </head>
 <body>
     <div class="container">
-        <?php if (!empty($_SESSION['error'])): ?>
-            <div class="alert alert-error"><?= $_SESSION['error']; unset($_SESSION['error']); ?></div>
-        <?php endif; ?>
-        <?php if (!empty($_SESSION['success'])): ?>
-            <div class="alert alert-success"><?= $_SESSION['success']; unset($_SESSION['success']); ?></div>
-        <?php endif; ?>
+        <?php 
+        $errorMessage = $_SESSION['error'] ?? null;
+        $successMessage = $_SESSION['success'] ?? null;
+        unset($_SESSION['error'], $_SESSION['success']);
+        ?>
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                <?php if ($errorMessage): ?>
+                    Toastify({
+                        text: <?= json_encode($errorMessage) ?>,
+                        duration: 3000,
+                        close: true,
+                        backgroundColor: "#e74c3c",
+                        gravity: "top",
+                        position: "right"
+                    }).showToast();
+                <?php endif; ?>
+                
+                <?php if ($successMessage): ?>
+                    Toastify({
+                        text: <?= json_encode($successMessage) ?>,
+                        duration: 3000,
+                        close: true,
+                        backgroundColor: "#4fbe87",
+                        gravity: "top",
+                        position: "right"
+                    }).showToast();
+                <?php endif; ?>
+            });
+        </script>

@@ -6,12 +6,6 @@
 <div class="page-content">
     <div class="row">
         <div class="col-12">
-            <?php if (!empty($_SESSION['error'])): ?>
-                <div class="alert alert-danger">
-                    <?= $_SESSION['error'];
-                    unset($_SESSION['error']); ?>
-                </div>
-            <?php endif; ?>
             <div class="card">
                 <div class="card-header">
                     <h4 class="card-title">Available Events</h4>

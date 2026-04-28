@@ -12,13 +12,6 @@
 <div class="page-content">
     <section class="section">
 
-        <?php if (!empty($_SESSION['error'])): ?>
-            <div class="alert alert-danger">
-                <?= $_SESSION['error'];
-                unset($_SESSION['error']); ?>
-            </div>
-        <?php endif; ?>
-
         <div class="card">
             <div class="card-body">
 
@@ -37,6 +30,7 @@
 
                         <form method="POST" action="index.php?page=order&action=store">
                             <input type="hidden" name="ticket_id" value="<?= $ticket['id'] ?>">
+                            <input type="hidden" name="event_id" value="<?= $event['id'] ?>">
 
                             <!-- QTY -->
                             <div class="mb-3">

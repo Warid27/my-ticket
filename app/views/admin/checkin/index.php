@@ -17,6 +17,8 @@
     </div>
 </div>
 
+<?php require_once 'app/views/partials/checkin-modal.php'; ?>
+
 <div class="page-content">
     <section class="section">
         <div class="card">
@@ -24,22 +26,43 @@
                 <h4 class="card-title">Ticket Check-in</h4>
             </div>
             <div class="card-body">
-                <?php if (!empty($_SESSION['error'])): ?>
-                    <div class="alert alert-danger">
-                        <?= $_SESSION['error'];
-                        unset($_SESSION['error']); ?>
-                    </div>
-                <?php endif; ?>
+                <ul class="nav nav-tabs mb-4" id="checkinTab" role="tablist">
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link active" id="manual-tab" data-bs-toggle="tab" data-bs-target="#manual-pane" type="button" role="tab">
+                            <i class="bi bi-keyboard"></i> Manual Input
+                        </button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="camera-tab" data-bs-toggle="tab" data-bs-target="#camera-pane" type="button" role="tab">
+                            <i class="bi bi-camera"></i> Camera Scan
+                        </button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="file-tab" data-bs-toggle="tab" data-bs-target="#file-pane" type="button" role="tab">
+                            <i class="bi bi-upload"></i> File Upload
+                        </button>
+                    </li>
+                </ul>
 
-                <form method="POST" action="index.php?page=attendee&action=checkin">
-                    <div class="form-group">
-                        <label for="ticket_code">Ticket Code</label>
-                        <input type="text" class="form-control form-control-lg" id="ticket_code" name="ticket_code"
-                            required autofocus placeholder="Enter ticket code">
+                <form method="POST" action="index.php?page=attendee&action=checkin" id="checkinForm">
+                    <input type="hidden" id="ticket_code" name="ticket_code" value="">
+
+                    <div class="tab-content" id="checkinTabContent">
+                        <!-- Manual Input Tab -->
+                        <div class="tab-pane fade show active" id="manual-pane" role="tabpanel">
+                            <div class="form-group">
+                                <label for="manual_ticket_code">Ticket Code</label>
+                                <input type="text" class="form-control form-control-lg" id="manual_ticket_code"
+                                    autofocus placeholder="Enter ticket code">
+                            </div>
+                            <button type="button" class="btn btn-primary btn-lg mt-3" id="manualSubmitBtn">
+                                <i class="bi bi-check-lg"></i> Check-in
+                            </button>
+                        </div>
+
+                        <?php require_once 'app/views/partials/checkin-camera.php'; ?>
+                        <?php require_once 'app/views/partials/checkin-file-input.php'; ?>
                     </div>
-                    <button type="submit" class="btn btn-primary btn-lg mt-3">
-                        <i class="bi bi-qr-code-scan"></i> Check-in
-                    </button>
                 </form>
 
                 <?php if (!empty($successCheck)): ?>
@@ -50,19 +73,19 @@
                         <div>
                             <div class="fw-bold mb-1">Check-in Berhasil!</div>
 
-                            <div class="small text-muted">
+                            <div class="small text-dark">
                                 Kode Tiket: <span class="text-dark fw-semibold">
                                     <?= htmlspecialchars($successCheck['ticketCode'] ?? '') ?>
                                 </span>
                             </div>
 
-                            <div class="small text-muted">
+                            <div class="small text-dark">
                                 Event: <span class="text-dark fw-semibold">
                                     <?= htmlspecialchars($successCheck['eventName'] ?? '') ?>
                                 </span>
                             </div>
 
-                            <div class="small text-muted">
+                            <div class="small text-dark">
                                 Nama: <span class="text-dark fw-semibold">
                                     <?= htmlspecialchars($successCheck['userName'] ?? '') ?>
                                 </span>
@@ -186,3 +209,5 @@
         </div>
     </section>
 </div>
+
+<?php require_once 'app/views/partials/checkin-js.php'; ?>

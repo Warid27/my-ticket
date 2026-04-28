@@ -107,6 +107,11 @@ CREATE TABLE
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
         FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE
     );
+
+-- Add password reset columns to users table
+ALTER TABLE users 
+ADD COLUMN password_reset_token VARCHAR(255) DEFAULT NULL,
+ADD COLUMN password_reset_expires DATETIME DEFAULT NULL;
 ";
 
 $pdo->exec($sql);
@@ -117,9 +122,9 @@ $users = [
     ['Admin', 'admin@gmail.com', 'password', 'admin'],
     ['Petugas 1', 'petugas1@gmail.com', 'password', 'petugas'],
     ['Petugas 2', 'petugas2@gmail.com', 'password', 'petugas'],
-    ['Mada Alvino MR', 'mdaja@gmail.com', 'password', 'user'],
+    ['Mada Alvino MR', 'vino@gmail.com', 'password', 'user'],
     ['Irfan', 'irfan@gmail.com', 'password', 'user'],
-    ['Al Warid', 'user@gmail.com', 'password', 'user'],
+    ['Al Warid', 'warid@gmail.com', 'password', 'user'],
 ];
 
 foreach ($users as $user) {
@@ -142,6 +147,7 @@ $venues = [
     ['Grand Hotel Artos', 'Jl. Artos', 500],
     ['Lapangan SMKN 2 Kota Magelang', 'Jl. Ahmad Yani', 100],
     ['Gedung AH Nasution', 'Akmil', 300],
+    ['Gelora Bung Karno', 'Jl. Jenderal Sudirman', 1500],
 ];
 
 foreach ($venues as $venue) {
@@ -160,6 +166,7 @@ $events = [
     ['GDG Community', '2026-09-28'],
     ['HUT SMEA', '2027-01-28'],
     ['WISUDA SMEA', '2026-10-28'],
+    ['Konser Avenged Sevenfold', '2025-12-28'],
 ];
 
 foreach ($events as $index => $event) {
@@ -195,6 +202,7 @@ $vouchers = [
     ["DISCOUNT100K", 100000, 50, 'value', 'aktif'],
     ["DISCOUNT1JT", 1000000, 10, 'value', 'aktif'],
     ["MYTICKET", 10, 1000, 'percentage', 'aktif'],
+    ["BLACKFRIDAY", 20, 500, 'percentage', 'aktif'],
 ];
 
 foreach ($vouchers as $voucher) {

@@ -1,97 +1,117 @@
-# MyTicket - Event Ticket Ordering System
+# MyTicket - Event Management System
 
-A web-based ticket ordering system built with PHP Native and MySQL.
+## General Information
+
+MyTicket is a comprehensive event management and ticketing system built with PHP. The system provides a complete solution for managing events, venues, tickets, orders, and attendees with role-based access control for administrators and regular users.
+
+**Key Features:**
+- Multi-role authentication (Admin/User)
+- Event and venue management
+- Ticket creation and sales
+- Order processing with payment integration
+- Attendee management and check-in
+- Voucher system
+- QR code generation and scanning
+- Export functionality (PDF/Excel)
+- Real-time notifications
 
 ## Features
 
-- **Admin Features**
-  - User management (CRUD) with PDF/Excel export
-  - Venue management (CRUD) with PDF/Excel export
-  - Event management (CRUD) with PDF/Excel export
-  - Ticket management (CRUD) with PDF/Excel export
-  - Voucher management (CRUD) with PDF/Excel export
-  - Order management with PDF/Excel export
-  - Check-in system
-  - Dashboard with statistics and charts
+### Core Modules
+- **Authentication System**: Secure login/logout with password reset functionality
+- **Dashboard**: Role-based dashboards for admins and users
+- **Event Management**: Create, edit, and manage events with venue assignments
+- **Venue Management**: Add and manage event venues
+- **Ticket Management**: Create different ticket types for events
+- **Order Processing**: Complete order lifecycle with payment integration
+- **Attendee Management**: Track and manage event attendees
+- **Voucher System**: Create and manage discount vouchers
+- **Notifications**: Real-time notification system
 
-- **Customer Features**
-  - User registration and login
-  - Browse events
-  - Purchase tickets
-  - View order history
-  - QR code tickets
+### User Roles
+- **Administrator**: Full access to all modules and system configuration
+- **User**: Limited access to events, tickets, and personal orders
 
-## Tech Stack
+### Technical Features
+- **Payment Integration**: Xendit payment gateway integration
+- **QR Code Support**: Generate tickets with QR codes and scanning functionality
+- **Export Capabilities**: Export data to PDF and Excel formats
+- **Email Services**: Email notifications via Resend API
+- **Security**: Session management, password hashing, and secure authentication
 
-- **Backend**: PHP Native
-- **Database**: MySQL
-- **Architecture**: MVC + BaseModel
-- **Frontend**: Pure HTML (no CSS, no Bootstrap)
-- **External Libraries**: CDN-based (QR codes, charts, export)
+## Assets Used
 
-## Installation
+### Frontend Framework
+- **Mazer**: Modern admin dashboard template for UI components and styling
 
-1. Clone the repository
-2. Create database `myticket` in MySQL
-3. Run migration: `php db/create_db.php` then `php db/migration.php`
-4. Configure web server to point to project root
-5. Access at `http://localhost/myticket/`
+### JavaScript Libraries
+- **jsPDF**: PDF generation library for creating downloadable reports
+- **XLSX**: Excel file generation and manipulation library
+- **QRCode**: QR code generation library for ticket creation
+- **QRScanner**: QR code scanning library for ticket validation
 
-## Default Login
+### External Services
+- **Xendit**: Payment gateway for processing ticket payments
+- **Resend**: Email service for sending notifications and confirmations
 
-- **Admin**: admin@gmail.com / password
-- **Petugas** (Staff): petugas1@gmail.com / password (or petugas2@gmail.com / password)
-- **Customer**: Register through the system
+### Database
+- **MySQL**: Relational database for storing application data
 
-## Project Structure
+## System Architecture
 
-```
-myticket/
-├── db/
-│   ├── db.php              # PDO connection
-│   ├── migration.php       # Database migration & seeder
-│   └── create_db.php       # Database creation
-├── app/
-│   ├── core/
-│   │   └── BaseModel.php   # Shared CRUD methods
-│   ├── models/             # Data models
-│   ├── controllers/        # Controllers
-│   └── views/              # Views
-├── uploads/                # Event images
-└── index.php               # Front controller
-```
+The application follows an MVC (Model-View-Controller) architecture:
 
-## Notes
+### Controllers
+- Handle HTTP requests and route to appropriate actions
+- Implement business logic and data validation
+- Manage user authentication and authorization
 
-- This is a boilerplate implementation following SDD specifications
-- No CSS or styling included - pure HTML focus
-- Uses transactions for order processing
-- QR codes generated client-side using CDN library
+### Models
+- Represent database entities and handle data operations
+- Implement CRUD operations for all system entities
+- Manage relationships between different data entities
 
-## CDN Libraries Used
+### Views
+- Render HTML templates with dynamic data
+- Include responsive UI components from Mazer framework
+- Provide user interfaces for all system functionalities
 
-### Export Functionality
-- **jsPDF** (v2.5.1): PDF generation library
-  - CDN: `https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js`
-- **jsPDF-AutoTable** (v3.5.31): Plugin for table generation in PDF
-  - CDN: `https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.31/jspdf.plugin.autotable.min.js`
-- **SheetJS** (v0.18.5): Excel file generation library
-  - CDN: `https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js`
+### Services
+- **EmailService**: Handle email communications
+- **XenditService**: Manage payment processing
 
-### QR Code Generation
-- **QRCode.js** (v1.0.0): Client-side QR code generator
-  - CDN: `https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js`
-  - Used in customer ticket display
+## Database Schema
 
-## Export Features
+The system uses the following main tables:
+- `users` - User accounts and authentication
+- `events` - Event information and details
+- `venues` - Event venue data
+- `tickets` - Ticket types and pricing
+- `orders` - Order information and status
+- `order_details` - Line items for orders
+- `attendees` - Event attendee records
+- `vouchers` - Discount voucher management
+- `notifications` - System notifications
 
-- **PDF Export**: Uses jsPDF with autoTable plugin
-- **Excel Export**: Uses SheetJS library
-- Available on all admin list pages (Users, Venues, Events, Tickets, Vouchers, Orders)
-- Simple one-click export with automatic filename generation
+## Security Features
 
-## Admin Access
+- Password hashing using PHP's built-in password functions
+- Session-based authentication with secure cookie settings
+- Role-based access control
+- Input validation and sanitization
+- SQL injection prevention through prepared statements
+- CSRF protection considerations
 
-- Admin users can manage all user accounts through the admin dashboard
-- Admin cannot delete their own account (security feature)
-- Password updates are optional when editing users
+## Configuration
+
+The system uses environment variables and configuration constants for:
+- Database connections
+- API keys (Xendit, Resend)
+- Application settings
+- Security parameters
+
+## Summary
+
+MyTicket is a full-featured event management system that provides comprehensive ticketing solutions with modern web technologies. It offers robust user management, secure payment processing, and extensive reporting capabilities through its export functionality. The system is designed to be scalable and maintainable, following best practices in PHP development and web security.
+
+The integration of modern JavaScript libraries for PDF/Excel export, QR code functionality, and the Mazer UI framework provides a professional user experience while maintaining clean, organized code structure through the MVC pattern.

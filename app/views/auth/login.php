@@ -7,17 +7,6 @@
                 <h1 class="auth-title">Log in.</h1>
                 <p class="auth-subtitle mb-5">Log in with your data that you entered during registration.</p>
 
-                <?php if (!empty($_SESSION['error'])): ?>
-                    <div class="alert alert-danger">
-                        <?= $_SESSION['error']; unset($_SESSION['error']); ?>
-                    </div>
-                <?php endif; ?>
-                <?php if (!empty($_SESSION['success'])): ?>
-                    <div class="alert alert-success">
-                        <?= $_SESSION['success']; unset($_SESSION['success']); ?>
-                    </div>
-                <?php endif; ?>
-
                 <form action="index.php?page=auth&action=authenticate" method="post">
                     <div class="form-group position-relative has-icon-left mb-4">
                         <input type="email" class="form-control form-control-xl" name="email" placeholder="Email" required>
@@ -35,6 +24,7 @@
                 </form>
                 <div class="text-center mt-5 text-lg fs-4">
                     <p class="text-gray-600">Don't have an account? <a href="index.php?page=auth&action=register" class="font-bold">Sign up</a>.</p>
+                    <p class="text-gray-600 mt-2"><a href="index.php?page=auth&action=forgotPassword" class="font-bold">Forgot your password?</a></p>
                 </div>
             </div>
         </div>

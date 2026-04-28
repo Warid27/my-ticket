@@ -16,7 +16,7 @@ class VoucherController extends BaseController
     {
         $search = $_GET['search'] ?? '';
         $page = (int) ($_GET['p'] ?? 1);
-        $pagination = $this->model->paginate($search, $page);
+        $pagination = $this->model->paginate($search, $page, 10, 'code');
         $this->layout->extend('mazer-dashboard');
         $this->layout->section('sidebarMenu', $this->getSidebarMenu('vouchers'));
         $this->layout->render('admin/voucher/index', [

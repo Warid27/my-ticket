@@ -84,4 +84,80 @@ class DashboardController extends BaseController
             'activeMenu' => 'dashboard'
         ]);
     }
+
+    public function profile()
+    {
+        $this->isLoggedIn();
+        require_once 'app/models/UserModel.php';
+        $userModel = new UserModel();
+        $user = $userModel->find($_SESSION['user_id']);
+
+        $activeMenu = 'profile';
+        $this->layout->extend('mazer-dashboard');
+        $this->layout->section('sidebarMenu', $this->getSidebarMenu($activeMenu));
+        $this->layout->render('profile', [
+            'title' => 'My Profile - MyTicket',
+            'user' => $user,
+            'activeMenu' => 'profile'
+        ]);
+    }
+
+    public function updateProfile()
+    {
+        $this->isLoggedIn();
+        require_once 'app/models/UserModel.php';
+        $userModel = new UserModel();
+
+        $name = $_POST['name'] ?? '';
+        $currentPassword = $_POST['current_password'] ?? '';
+        $newPassword = $_POST['new_password'] ?? '';
+        $passwordConfirmation = $_POST['password_confirmation'] ?? '';
+
+        if (empty($name)) {
+            $_SESSION['error'] = 'Name is required.';
+            header("Location: index.php?page=dashboard&action=profile");
+            exit;
+        }
+
+        $data = ['name' => $name];
+
+        // Update password if provided
+        if (!empty($newPassword)) {
+            if (empty($currentPassword)) {
+                $_SESSION['error'] = 'Current password is required to change password.';
+                header("Location: index.php?page=dashboard&action=profile");
+                exit;
+            }
+
+            if (!$userModel->verifyPassword($_SESSION['user_id'], $currentPassword)) {
+                $_SESSION['error'] = 'Current password is incorrect.';
+                header("Location: index.php?page=dashboard&action=profile");
+                exit;
+            }
+
+            if ($newPassword !== $passwordConfirmation) {
+                $_SESSION['error'] = 'New passwords do not match.';
+                header("Location: index.php?page=dashboard&action=profile");
+                exit;
+            }
+
+            if (strlen($newPassword) < PASSWORD_MIN_LENGTH) {
+                $_SESSION['error'] = 'Password must be at least ' . PASSWORD_MIN_LENGTH . ' characters long.';
+                header("Location: index.php?page=dashboard&action=profile");
+                exit;
+            }
+
+            $data['password'] = password_hash($newPassword, PASSWORD_DEFAULT);
+        }
+
+        if ($userModel->update($_SESSION['user_id'], $data)) {
+            $_SESSION['name'] = $name;
+            $_SESSION['success'] = 'Profile updated successfully.';
+        } else {
+            $_SESSION['error'] = 'Failed to update profile.';
+        }
+
+        header("Location: index.php?page=dashboard&action=profile");
+        exit;
+    }
 }

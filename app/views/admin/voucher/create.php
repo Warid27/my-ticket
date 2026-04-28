@@ -1,4 +1,3 @@
-<?php $error = $_SESSION['error'] ?? null; ?>
 <?php $old = $_SESSION['old'] ?? []; ?>
 
 <div class="page-heading">
@@ -19,13 +18,6 @@
                 <h4 class="card-title">Voucher Information</h4>
             </div>
             <div class="card-body">
-                <!-- ERROR -->
-                <?php if ($error): ?>
-                    <div class="alert alert-danger">
-                        <?= $error ?>
-                        <?php unset($_SESSION['error'], $_SESSION['old']); ?>
-                    </div>
-                <?php endif; ?>
 
                 <form method="POST" action="index.php?page=voucher&action=store">
 

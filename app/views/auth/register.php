@@ -8,19 +8,6 @@
             <h1 class="auth-title">Sign Up.</h1>
             <p class="auth-subtitle mb-5">Enter your data to register.</p>
 
-            <?php if (!empty($_SESSION['error'])): ?>
-                <div class="alert alert-danger">
-                    <?= $_SESSION['error'];
-                    unset($_SESSION['error']); ?>
-                </div>
-            <?php endif; ?>
-            <?php if (!empty($_SESSION['success'])): ?>
-                <div class="alert alert-success">
-                    <?= $_SESSION['success'];
-                    unset($_SESSION['success']); ?>
-                </div>
-            <?php endif; ?>
-
             <form action="index.php?page=auth&action=store" method="post">
                 <div class="form-group position-relative has-icon-left mb-4">
                     <input type="text" class="form-control form-control-xl" name="name" placeholder="Name" required>

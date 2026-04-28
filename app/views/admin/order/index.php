@@ -38,7 +38,7 @@
                     <table class="table table-striped" id="ordersTable">
                         <thead>
                             <tr>
-                                <th>ID</th>
+                                <th>No</th>
                                 <th>Customer</th>
                                 <th>Date</th>
                                 <th>Total</th>
@@ -48,7 +48,7 @@
                             </tr>
                         </thead>
                         <tbody>
-                            <?php foreach ($pagination['data'] as $o): ?>
+                            <?php foreach ($pagination['data'] as $index => $o): ?>
                             <tr>
                                 <td><?= $o['id'] ?></td>
                                 <td><?= htmlspecialchars($o['customer_name']) ?></td>

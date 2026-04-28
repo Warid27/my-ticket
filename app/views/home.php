@@ -7,7 +7,7 @@
     <title>MyTicket - Event Ticketing Platform</title>
     <link href="app/assets/compiled/css/app.css" rel="stylesheet">
     <link rel="shortcut icon" href="app/assets/compiled/svg/favicon.svg" type="image/x-icon">
-    
+
 
 </head>
 
@@ -16,9 +16,9 @@
         <!-- Navigation -->
         <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm">
             <div class="container">
-                <a class="navbar-brand fw-bold" href="index.php">
-                    <i class="bi bi-ticket-perforated-fill text-primary"></i> MyTicket
-                </a>
+                <div class="auth-logo">
+                    <a href="index.php"><img style="height: 10rem; margin: -3rem" src="app/assets/compiled/svg/logo.svg" alt="Logo"></a>
+                </div>
                 <div class="d-flex gap-2">
                     <a href="index.php?page=auth&action=login" class="btn btn-outline-primary">Login</a>
                     <a href="index.php?page=auth&action=register" class="btn btn-primary">Register</a>

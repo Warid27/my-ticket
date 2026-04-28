@@ -75,8 +75,13 @@ class VenueController extends BaseController
 
     public function destroy(): void
     {
-        $this->model->delete((int) $_GET['id']);
-        header("Location: $this->indexPage");
-        exit;
+        try {
+            $this->model->delete((int) $_GET['id']);
+            header("Location: $this->indexPage");
+            exit;
+        } catch (PDOException $e) {
+            // Re-throw to be caught by global error handler
+            throw $e;
+        }
     }
 }

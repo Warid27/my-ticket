@@ -9,6 +9,7 @@
     <link rel="stylesheet" href="<?= $this->asset('compiled/css/app.css') ?>">
     <link rel="stylesheet" href="<?= $this->asset('compiled/css/app-dark.css') ?>">
     <link rel="stylesheet" href="<?= $this->asset('compiled/css/iconly.css') ?>">
+    <link rel="stylesheet" href="<?= $this->asset('extensions/toastify-js/src/toastify.css') ?>">
 </head>
 
 <body>
@@ -75,7 +76,7 @@
             <footer>
                 <div class="footer clearfix mb-0 text-muted">
                     <div class="float-start">
-                        <p><?= date('Y') ?> &copy; MyTicket</p>
+                        <p><?= date('Y') ?> &copy; <a href="https://github.com/Warid27/my-ticket" target="_blank">MyTicket</a></p>
                     </div>
                     <div class="float-end">
                         <p>Ticket Management System</p>
@@ -87,6 +88,7 @@
     <script src="<?= $this->asset('static/js/components/dark.js') ?>"></script>
     <script src="<?= $this->asset('extensions/perfect-scrollbar/perfect-scrollbar.min.js') ?>"></script>
     <script src="<?= $this->asset('compiled/js/app.js') ?>"></script>
+    <script src="<?= $this->asset('extensions/toastify-js/src/toastify.js') ?>"></script>
     <script>
         // patch prototype setelah app.js load
         if (window.sidebar && window.sidebar.__proto__) {
@@ -111,6 +113,37 @@
                 }
             };
         }
+
+        // Toastify notifications for session messages
+        document.addEventListener('DOMContentLoaded', function() {
+            <?php 
+            $errorMessage = $_SESSION['error'] ?? null;
+            $successMessage = $_SESSION['success'] ?? null;
+            unset($_SESSION['error'], $_SESSION['success']);
+            ?>
+            
+            <?php if ($errorMessage): ?>
+                Toastify({
+                    text: <?= json_encode($errorMessage) ?>,
+                    duration: 3000,
+                    close: true,
+                    backgroundColor: "#e74c3c",
+                    gravity: "top",
+                    position: "right"
+                }).showToast();
+            <?php endif; ?>
+            
+            <?php if ($successMessage): ?>
+                Toastify({
+                    text: <?= json_encode($successMessage) ?>,
+                    duration: 3000,
+                    close: true,
+                    backgroundColor: "#4fbe87",
+                    gravity: "top",
+                    position: "right"
+                }).showToast();
+            <?php endif; ?>
+        });
     </script>
 </body>
 

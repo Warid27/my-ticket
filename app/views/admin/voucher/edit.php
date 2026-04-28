@@ -1,6 +1,5 @@
-<?php $error = $_SESSION['error'] ?? null; ?>
 <?php $old = $_SESSION['old'] ?? []; ?>
-<?php unset($_SESSION['error'], $_SESSION['old']); ?>
+<?php unset($_SESSION['old']); ?>
 
 <?php
 // helper biar gak ribet
@@ -21,13 +20,6 @@ function oldOrVoucher($key, $voucher, $old) {
                 <h4 class="card-title">Voucher Information</h4>
             </div>
             <div class="card-body">
-
-                <!-- ERROR -->
-                <?php if ($error): ?>
-                    <div class="alert alert-danger">
-                        <?= $error ?>
-                    </div>
-                <?php endif; ?>
 
                 <form method="POST" action="index.php?page=voucher&action=update">
                     <input type="hidden" name="id" value="<?= $voucher['id'] ?>">

@@ -24,6 +24,9 @@
                                     <p><strong>Check-in Time:</strong> <?= htmlspecialchars($a['checkin_time']) ?></p>
                                 <?php endif; ?>
                                 <div id="qr-<?= $index ?>" class="mt-2"></div>
+                                <button class="btn btn-sm btn-primary mt-2" onclick="downloadQR(<?= $index ?>)">
+                                    <i class="bi bi-download"></i> Download QR
+                                </button>
                             </div>
                         <?php endforeach; ?>
                     <?php else: ?>
@@ -40,4 +43,15 @@
 <?php foreach ($attendees as $index => $a): ?>
     new QRCode(document.getElementById("qr-<?= $index ?>"), "<?= htmlspecialchars($a['ticket_code'] ?? '') ?>");
 <?php endforeach; ?>
+
+    function downloadQR(index) {
+        const qrDiv = document.getElementById("qr-" + index);
+        const img = qrDiv.querySelector("img");
+        if (img) {
+            const link = document.createElement("a");
+            link.href = img.src;
+            link.download = "ticket-qr-" + index + ".png";
+            link.click();
+        }
+    }
 </script>

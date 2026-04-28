@@ -80,7 +80,7 @@ class AttendeeController extends BaseController
         }
 
         if ($attendee['checkin_status'] === 'sudah') {
-            $_SESSION['error'] = 'Ticket already checked in';
+            $_SESSION['error'] = 'Tiket sudah digunakan untuk check-in';
             header('Location: index.php?page=attendee&action=index');
             exit;
         }
@@ -146,6 +146,73 @@ class AttendeeController extends BaseController
             'userName' => $user['name']
         ];
         header('Location: index.php?page=attendee&action=index');
+        exit;
+    }
+
+    public function getTicketInfo(): void
+    {
+        header('Content-Type: application/json');
+
+        $ticketCode = $_GET['ticket_code'] ?? '';
+        if (empty($ticketCode)) {
+            echo json_encode(['success' => false, 'message' => 'Ticket code is required']);
+            exit;
+        }
+
+        $attendee = $this->model->findByCode($ticketCode);
+        if (!$attendee) {
+            echo json_encode(['success' => false, 'message' => 'Ticket code not found']);
+            exit;
+        }
+
+        if ($attendee['checkin_status'] === 'sudah') {
+            echo json_encode(['success' => false, 'message' => 'Tiket sudah digunakan untuk check-in']);
+            exit;
+        }
+
+        require_once 'app/models/OrderDetailModel.php';
+        require_once 'app/models/OrderModel.php';
+        require_once 'app/models/TicketModel.php';
+        require_once 'app/models/EventModel.php';
+        require_once 'app/models/UserModel.php';
+
+        $orderDetailModel = new OrderDetailModel();
+        $orderModel = new OrderModel();
+        $ticketModel = new TicketModel();
+        $eventModel = new EventModel();
+        $userModel = new UserModel();
+
+        $orderDetail = $orderDetailModel->find($attendee['detail_id']);
+        if (!$orderDetail) {
+            echo json_encode(['success' => false, 'message' => 'Order detail not found']);
+            exit;
+        }
+
+        $order = $orderModel->find($orderDetail['order_id']);
+        if (!$order || $order['status'] !== 'paid') {
+            echo json_encode(['success' => false, 'message' => 'Check-in only allowed for paid orders']);
+            exit;
+        }
+
+        $ticket = $ticketModel->find($orderDetail['ticket_id']);
+        $event = $ticket ? $eventModel->find($ticket['event_id']) : null;
+        $user = $userModel->find($order['user_id']);
+
+        echo json_encode([
+            'success' => true,
+            'data' => [
+                'ticketCode' => $attendee['ticket_code'],
+                'eventName' => $event ? $event['name'] : 'Unknown',
+                'eventDate' => $event ? $event['date'] : '-',
+                'userName' => $user ? $user['name'] : 'Unknown',
+                'userEmail' => $user ? $user['email'] : '-',
+                'ticketName' => $ticket ? $ticket['name'] : 'Unknown',
+                'ticketPrice' => $ticket ? $ticket['price'] : 0,
+                'qty' => $orderDetail['qty'] ?? 1,
+                'subtotal' => $orderDetail['subtotal'] ?? 0,
+                'orderDate' => $order['date'] ?? '-'
+            ]
+        ]);
         exit;
     }
 }

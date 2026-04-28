@@ -33,18 +33,22 @@ class BaseModel
         return (int) $this->db->lastInsertId();
     }
 
-    public function update(int $id, array $data): void
+    public function update(int $id, array $data): bool
     {
         $data = array_intersect_key($data, array_flip($this->fillable));
         $set = implode(', ', array_map(fn($c) => "$c = ?", array_keys($data)));
         $stmt = $this->db->prepare("UPDATE {$this->table} SET $set WHERE id = ?");
-        $stmt->execute([...array_values($data), $id]);
+        return $stmt->execute([...array_values($data), $id]);
     }
 
     public function delete(int $id): void
     {
-        $stmt = $this->db->prepare("DELETE FROM {$this->table} WHERE id = ?");
-        $stmt->execute([$id]);
+        try {
+            $stmt = $this->db->prepare("DELETE FROM {$this->table} WHERE id = ?");
+            $stmt->execute([$id]);
+        } catch (PDOException $e) {
+            throw $e;
+        }
     }
 
     public function query(string $sql, array $params = []): array

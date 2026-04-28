@@ -95,12 +95,14 @@ class OrderUserController extends BaseController
         session_start();
 
         require_once 'app/models/TicketModel.php';
+        require_once 'app/models/EventModel.php';
         require_once 'app/models/OrderModel.php';
         require_once 'app/models/OrderDetailModel.php';
         require_once 'app/models/AttendeeModel.php';
         require_once 'app/models/VoucherModel.php';
 
         $ticketModel = new TicketModel();
+        $eventModel = new EventModel();
         $voucherModel = new VoucherModel();
         $orderModel = new OrderModel();
         $orderDetailModel = new OrderDetailModel();
@@ -108,13 +110,13 @@ class OrderUserController extends BaseController
 
         $qty = (int) $_POST['qty'];
         $ticket = $ticketModel->find((int) $_POST['ticket_id']);
+        $event = $eventModel->find((int) ($_POST['event_id'] ?? 0));
 
-        if (!$ticket) {
-            $_SESSION['error'] = 'Ticket not found!';
+        if (!$ticket || !$event) {
+            $_SESSION['error'] = 'Ticket or event not found!';
             header("Location: index.php?page=event&action=index");
             exit;
         }
-
 
         $isExpired = strtotime($event['date']) < time();
 
@@ -273,11 +275,47 @@ class OrderUserController extends BaseController
             exit;
         }
 
-        $this->model->update($orderId, ['status' => 'paid']);
+        // Get user details for Xendit
+        require_once 'app/models/UserModel.php';
+        $userModel = new UserModel();
+        $user = $userModel->find($_SESSION['user_id']);
 
-        $_SESSION['success'] = 'Payment successful!';
-        header("Location: index.php?page=order&action=show&id=$orderId");
-        exit;
+        if (!$user) {
+            $_SESSION['error'] = 'User not found!';
+            header("Location: index.php?page=order&action=history");
+            exit;
+        }
+
+        // Create Xendit invoice
+        require_once 'app/services/XenditService.php';
+        $xendit = new XenditService();
+
+        // Get order details for description
+        require_once 'app/models/OrderDetailModel.php';
+        $orderDetailModel = new OrderDetailModel();
+        $details = $orderDetailModel->byOrder($orderId);
+        $description = 'Order #' . $orderId;
+        if (!empty($details)) {
+            $description = $details[0]['event_name'] . ' - ' . $details[0]['ticket_name'];
+        }
+
+        $invoice = $xendit->createInvoice(
+            $orderId,
+            $order['total'],
+            $user['email'],
+            $user['name'],
+            $description
+        );
+
+        if ($invoice && isset($invoice['invoice_url'])) {
+            // Redirect to Xendit checkout page
+            header("Location: " . $invoice['invoice_url']);
+            exit;
+        } else {
+            $_SESSION['error'] = 'Failed to create payment invoice. Please try again.';
+            header("Location: index.php?page=order&action=show&id=$orderId");
+            exit;
+        }
     }
 
     public function cancel(): void

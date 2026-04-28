@@ -42,6 +42,7 @@
             text-align: center;
         }
     </style>
+    <link rel="stylesheet" href="<?= $this->asset('extensions/toastify-js/src/toastify.css') ?>">
 </head>
 <body>
     <aside class="sidebar">
@@ -62,5 +63,37 @@
             <p>&copy; <?= date('Y') ?> MyTicket. All rights reserved.</p>
         </footer>
     </div>
+    <script src="<?= $this->asset('extensions/toastify-js/src/toastify.js') ?>"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            <?php 
+            $errorMessage = $_SESSION['error'] ?? null;
+            $successMessage = $_SESSION['success'] ?? null;
+            unset($_SESSION['error'], $_SESSION['success']);
+            ?>
+            
+            <?php if ($errorMessage): ?>
+                Toastify({
+                    text: <?= json_encode($errorMessage) ?>,
+                    duration: 3000,
+                    close: true,
+                    backgroundColor: "#e74c3c",
+                    gravity: "top",
+                    position: "right"
+                }).showToast();
+            <?php endif; ?>
+            
+            <?php if ($successMessage): ?>
+                Toastify({
+                    text: <?= json_encode($successMessage) ?>,
+                    duration: 3000,
+                    close: true,
+                    backgroundColor: "#4fbe87",
+                    gravity: "top",
+                    position: "right"
+                }).showToast();
+            <?php endif; ?>
+        });
+    </script>
 </body>
 </html>

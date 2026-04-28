@@ -1,7 +1,13 @@
+<?php
+// Compute base URL for assets
+$scriptName = $_SERVER['SCRIPT_NAME'] ?? '/';
+$baseDir = dirname($scriptName);
+$baseUrl = ($baseDir === '/' || $baseDir === '\\') ? '' : $baseDir;
+?>
 <!-- Export Scripts - Include in admin list pages -->
-<script src="app/assets/jspdf.umd.min.js"></script>
-<script src="app/assets/jspdf.plugin.autotable.min.js"></script>
-<script src="app/assets/xlsx.full.min.js"></script>
+<script src="<?= $baseUrl ?>/app/assets/jspdf.umd.min.js"></script>
+<script src="<?= $baseUrl ?>/app/assets/jspdf.plugin.autotable.min.js"></script>
+<script src="<?= $baseUrl ?>/app/assets/xlsx.full.min.js"></script>
 
 <script>
 function exportToPDF(tableId, filename) {
